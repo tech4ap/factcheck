@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-07-02T08:57:38.678326",
+  "duration": 30.106278896331787,
+  "test_status": "PASSED",
+  "coverage": {
+    "line_rate": 0,
+    "lines_covered": 0,
+    "lines_valid": 0
+  },
+  "packages": 6,
+  "recommendations": [
+    "Increase overall test coverage to at least 70%",
+    "Focus on improving coverage for: core, inference, training, utils"
+  ]
+}

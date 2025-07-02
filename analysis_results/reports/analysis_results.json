@@ -1,0 +1,39 @@
+{
+  "data_distribution": {
+    "video": {
+      "train": {
+        "fake": 6108,
+        "real": 554
+      },
+      "validation": {
+        "fake": 1300,
+        "real": 199
+      },
+      "test": {
+        "fake": 1299,
+        "real": 200
+      }
+    }
+  },
+  "training_results": {
+    "evaluation": {
+      "video": {
+        "accuracy": 0.5,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "auc": 0.4533333333333333
+      }
+    },
+    "training_plots": [
+      "models/training_plots/video_model_training_summary.png",
+      "models/training_plots/video_model_training_history.png"
+    ],
+    "performance_plots": [
+      "models/performance_plots/video_model_confusion_matrix.png",
+      "models/performance_plots/video_model_roc_curve.png",
+      "models/performance_plots/model_comparison.png"
+    ]
+  },
+  "analysis_timestamp": "2025-06-23T23:48:52.830976"
+}

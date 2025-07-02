@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deepfake Detection - Test Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #007bff;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .status.passed {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.failed {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+        }
+        .section h2 {
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .metric {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 150px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        .coverage-chart {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .coverage-chart img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .recommendations {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .recommendations h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+        .recommendations ul {
+            color: #856404;
+        }
+        .test-output {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test Report</h1>
+            <p>Deepfake Detection Project</p>
+            <div class="status passed">
+                PASSED
+            </div>
+            <p>Generated on 2025-07-02T08:57:38.456691</p>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Test Summary</h2>
+            <div class="metric">
+                <div class="metric-value">PASSED</div>
+                <div class="metric-label">Test Status</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">29.88s</div>
+                <div class="metric-label">Duration</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">6</div>
+                <div class="metric-label">Packages Tested</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📈 Coverage Analysis</h2>
+            <div class="metric">
+                <div class="metric-value">0.0%</div>
+                <div class="metric-label">Line Coverage</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">0</div>
+                <div class="metric-label">Lines Covered</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">0</div>
+                <div class="metric-label">Total Lines</div>
+            </div>
+        </div>
+        
+        <div class="coverage-chart"><img src="reports/coverage_chart.png" alt="Coverage Chart"></div>
+        
+        <div class="section">
+            <h2>💡 Recommendations</h2>
+            <div class="recommendations">
+                <h3>Improvement Suggestions:</h3>
+                <ul>
+                    <li>Increase overall test coverage to at least 70%</li><li>Focus on improving coverage for: core, inference, training, utils</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📋 Test Output</h2>
+            <div class="test-output">============================= test session starts ==============================
+platform darwin -- Python 3.12.7, pytest-8.4.1, pluggy-1.6.0 -- /Users/ajayp/work/gcu/gcu-src-deepfake-project/dfd/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/ajayp/work/gcu/gcu-src-deepfake-project/dfd
+configfile: pyproject.toml
+plugins: cov-6.2.1
+collecting ... collected 95 items
+
+test_data_loading.py::test_image_loading PASSED                          [  1%]
+test_data_loading.py::test_video_loading PASSED                          [  2%]
+test_data_loading.py::test_audio_loading PASSED                          [  3%]
+test_edge_cases.py::test_empty_image_directory PASSED                    [  4%]
+test_edge_cases.py::test_one_class_image_directory PASSED                [  5%]
+test_edge_cases.py::test_visualizer_empty_metrics PASSED                 [  6%]
+test_edge_cases.py::test_metrics_all_correct PASSED                      [  7%]
+test_edge_cases.py::test_metrics_all_wrong PASSED                        [  8%]
+test_edge_cases.py::test_metrics_random PASSED                           [  9%]
+test_evaluation.py::test_comprehensive_metrics PASSED                    [ 10%]
+test_evaluation.py::test_visualization PASSED                            [ 11%]
+test_evaluation.py::test_model_comparison PASSED                         [ 12%]
+test_main_training.py::TestMainTraining::test_validate_arguments_valid PASSED [ 13%]
+test_main_training.py::TestMainTraining::test_validate_arguments_invalid_data_dir PASSED [ 14%]
+test_main_training.py::TestMainTraining::test_validate_arguments_invalid_epochs PASSED [ 15%]
+test_main_training.py::TestMainTraining::test_validate_arguments_invalid_batch_size PASSED [ 16%]
+test_main_training.py::TestMainTraining::test_validate_arguments_invalid_learning_rate PASSED [ 17%]
+test_main_training.py::TestMainTraining::test_validate_arguments_invalid_frames_per_video PASSED [ 18%]
+test_main_training.py::TestMainTraining::test_train_models_all PASSED    [ 20%]
+test_main_training.py::TestMainTraining::test_train_models_image_only PASSED [ 21%]
+test_main_training.py::TestMainTraining::test_train_models_video_only PASSED [ 22%]
+test_main_training.py::TestMainTraining::test_train_models_audio_only PASSED [ 23%]
+test_main_training.py::TestMainTraining::test_train_models_with_fine_tuning PASSED [ 24%]
+test_main_training.py::TestMainTraining::test_train_models_without_fine_tuning PASSED [ 25%]
+test_models.py::TestImageDeepfakeDetector::test_init PASSED              [ 26%]
+test_models.py::TestImageDeepfakeDetector::test_build_model_efficientnet PASSED [ 27%]
+test_models.py::TestImageDeepfakeDetector::test_build_model_resnet PASSED [ 28%]
+test_models.py::TestImageDeepfakeDetector::test_build_model_invalid_base PASSED [ 29%]
+test_models.py::TestImageDeepfakeDetector::test_fine_tune PASSED         [ 30%]
+test_models.py::TestImageDeepfakeDetector::test_fine_tune_without_build PASSED [ 31%]
+test_models.py::TestVideoDeepfakeDetector::test_init PASSED              [ 32%]
+test_models.py::TestVideoDeepfakeDetector::test_build_model PASSED       [ 33%]
+test_models.py::TestAudioDeepfakeDetector::test_init PASSED              [ 34%]
+test_models.py::TestAudioDeepfakeDetector::test_build_model PASSED       [ 35%]
+test_models.py::TestEnsembleDeepfakeDetector::test_init PASSED           [ 36%]
+test_models.py::TestEnsembleDeepfakeDetector::test_build_ensemble SKIPPED [ 37%]
+test_models.py::TestEnsembleDeepfakeDetector::test_predict_with_all_models PASSED [ 38%]
+test_models.py::TestEnsembleDeepfakeDetector::test_predict_with_partial_models PASSED [ 40%]
+test_models.py::TestUtilityFunctions::test_create_callbacks PASSED       [ 41%]
+test_models.py::TestUtilityFunctions::test_create_callbacks_with_patience PASSED [ 42%]
+test_models.py::TestUtilityFunctions::test_evaluate_model PASSED         [ 43%]
+test_models.py::TestModelIntegration::test_model_serialization SKIPPED   [ 44%]
+test_models.py::TestModelIntegration::test_model_prediction_shape PASSED [ 45%]
+test_training.py::TestModelTrainer::test_init PASSED                     [ 46%]
+test_training.py::TestModelTrainer::test_init_with_max_samples PASSED    [ 47%]
+test_training.py::TestModelTrainer::test_create_data_augmentation SKIPPED [ 48%]
+test_training.py::TestModelTrainer::test_save_training_history PASSED    [ 49%]
+test_training.py::TestModelTrainer::test_train_image_model_success PASSED [ 50%]
+test_training.py::TestModelTrainer::test_train_image_model_no_data PASSED [ 51%]
+test_training.py::TestModelTrainer::test_train_video_model_success SKIPPED [ 52%]
+test_training.py::TestModelTrainer::test_train_audio_model_success PASSED [ 53%]
+test_training.py::TestModelTrainer::test_evaluate_models SKIPPED (Co...) [ 54%]
+test_training.py::TestModelTrainer::test_print_training_summary SKIPPED  [ 55%]
+test_training.py::TestModelEvaluator::test_init PASSED                   [ 56%]
+test_training.py::TestModelEvaluator::test_calculate_comprehensive_metrics PASSED [ 57%]
+test_training.py::TestModelEvaluator::test_calculate_comprehensive_metrics_edge_cases PASSED [ 58%]
+test_training.py::TestModelEvaluator::test_evaluate_model_comprehensive PASSED [ 60%]
+test_training.py::TestModelEvaluator::test_save_detailed_evaluation_results PASSED [ 61%]
+test_training.py::TestModelEvaluator::test_create_comprehensive_evaluation_report PASSED [ 62%]
+test_training.py::TestModelEvaluator::test_print_evaluation_summary PASSED [ 63%]
+test_training.py::TestModelVisualizer::test_init PASSED                  [ 64%]
+test_training.py::TestModelVisualizer::test_plot_training_history PASSED [ 65%]
+test_training.py::TestModelVisualizer::test_plot_confusion_matrix PASSED [ 66%]
+test_training.py::TestModelVisualizer::test_plot_roc_curve SKIPPED (...) [ 67%]
+test_training.py::TestModelVisualizer::test_plot_precision_recall_curve SKIPPED [ 68%]
+test_training.py::TestModelVisualizer::test_plot_enhanced_model_comparison PASSED [ 69%]
+test_training.py::TestModelVisualizer::test_create_performance_summary_report PASSED [ 70%]
+test_training.py::TestModelVisualizer::test_plot_data_distribution PASSED [ 71%]
+test_training.py::TestModelVisualizer::test_create_training_summary_report PASSED [ 72%]
+test_training_module.py::TestModelTrainer::test_init PASSED              [ 73%]
+test_training_module.py::TestModelTrainer::test_init_with_max_samples PASSED [ 74%]
+test_training_module.py::TestModelTrainer::test_create_data_augmentation SKIPPED [ 75%]
+test_training_module.py::TestModelTrainer::test_save_training_history PASSED [ 76%]
+test_training_module.py::TestModelTrainer::test_train_image_model_success PASSED [ 77%]
+test_training_module.py::TestModelTrainer::test_train_image_model_no_data PASSED [ 78%]
+test_training_module.py::TestModelTrainer::test_train_video_model_success SKIPPED [ 80%]
+test_training_module.py::TestModelTrainer::test_train_audio_model_success PASSED [ 81%]
+test_training_module.py::TestModelTrainer::test_evaluate_models SKIPPED  [ 82%]
+test_training_module.py::TestModelTrainer::test_print_training_summary SKIPPED [ 83%]
+test_training_module.py::TestModelEvaluator::test_init PASSED            [ 84%]
+test_training_module.py::TestModelEvaluator::test_calculate_comprehensive_metrics PASSED [ 85%]
+test_training_module.py::TestModelEvaluator::test_calculate_comprehensive_metrics_edge_cases PASSED [ 86%]
+test_training_module.py::TestModelEvaluator::test_evaluate_model_comprehensive PASSED [ 87%]
+test_training_module.py::TestModelEvaluator::test_save_detailed_evaluation_results PASSED [ 88%]
+test_training_module.py::TestModelEvaluator::test_create_comprehensive_evaluation_report PASSED [ 89%]
+test_training_module.py::TestModelEvaluator::test_print_evaluation_summary PASSED [ 90%]
+test_training_module.py::TestModelVisualizer::test_init PASSED           [ 91%]
+test_training_module.py::TestModelVisualizer::test_plot_training_history PASSED [ 92%]
+test_training_module.py::TestModelVisualizer::test_plot_confusion_matrix PASSED [ 93%]
+test_training_module.py::TestModelVisualizer::test_plot_roc_curve SKIPPED [ 94%]
+test_training_module.py::TestModelVisualizer::test_plot_precision_recall_curve SKIPPED [ 95%]
+test_training_module.py::TestModelVisualizer::test_plot_enhanced_model_comparison PASSED [ 96%]
+test_training_module.py::TestModelVisualizer::test_create_performance_summary_report PASSED [ 97%]
+test_training_module.py::TestModelVisualizer::test_plot_data_distribution PASSED [ 98%]
+test_training_module.py::TestModelVisualizer::test_create_training_summary_report PASSED [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/_pytest/config/__init__.py:1533
+  /Users/ajayp/work/gcu/gcu-src-deepfake-project/dfd/.venv/lib/python3.12/site-packages/_pytest/config/__init__.py:1533: PytestConfigWarning: No files were found in testpaths; consider removing or adjusting your testpaths configuration. Searching recursively from the current directory instead.
+    self.args, self.args_source = self._decide_args(
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.MessageMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
+
+<frozen importlib._bootstrap>:488
+  <frozen importlib._bootstrap>:488: DeprecationWarning: Type google._upb._message.ScalarMapContainer uses PyType_Spec with a metaclass that has custom tp_new. This is deprecated and will no longer be allowed in Python 3.14.
+
+test_evaluation.py::test_comprehensive_metrics
+  /Users/ajayp/work/gcu/gcu-src-deepfake-project/dfd/.venv/lib/python3.12/site-packages/_pytest/python.py:161: PytestReturnNotNoneWarning: Test functions should return None, but test_evaluation.py::test_comprehensive_metrics returned <class 'tuple'>.
+  Did you mean to use `assert` instead of `return`?
+  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for more information.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /Users/ajayp/work/gcu/gcu-src-deepfake-project/dfd/test-results.xml -
+================================ tests coverage ================================
+_______________ coverage: platform darwin, python 3.12.7-final-0 _______________
+
+Name                                      Stmts   Miss  Cover   Missing
+-----------------------------------------------------------------------
+src/config.py                                25      0   100%
+src/core/__init__.py                         10     10     0%   12-50
+src/core/base.py                            170    170     0%   9-463
+src/core/config.py                          158    158     0%   8-328
+src/core/constants.py                       126    126     0%   8-311
+src/core/decorators.py                      222    222     0%   8-446
+src/core/exceptions.py                       98     98     0%   8-281
+src/core/logging_config.py                  133    133     0%   9-308
+src/inference/common.py                     195    166    15%   22, 38-47, 59-65, 78-87, 110-121, 130-161, 174-187, 196-219, 228-252, 266-286, 295-300, 320-348, 358-373, 386-411, 419-421, 424, 427-429, 433, 437-443
+src/models/deepfake_detector.py             193     33    83%   33, 39, 48-93, 107, 328-362, 370, 384
+src/training/__init__.py                      8      0   100%
+src/training/data_loader.py                 369    264    28%   26-28, 72-75, 88-100, 116, 128-130, 143-151, 165-186, 241-244, 252-259, 292-341, 386-434, 449-491, 507-550, 566-604, 617-625, 639-666, 687-688, 717-774
+src/training/evaluation.py                  180     13    93%   267, 270-273, 276, 279-282, 330-332, 363-364
+src/training/main.py                         62     14    77%   128-175
+src/training/model_saver.py                 125    125     0%   8-266
+src/training/train_deepfake_detector.py    1158    731    37%   46-48, 90-92, 105-108, 121-133, 146-163, 176-204, 217-284, 299-348, 363-430, 445-487, 500-534, 550-593, 609-647, 665-745, 766-787, 791, 801, 817-826, 830-883, 895-906, 922-987, 1003-1048, 1063-1108, 1124-1163, 1179-1206, 1235-1288, 1297-1327, 1365-1418, 1504-1544, 1553-1592, 1605-1667, 1689-1701, 1871, 1875-1877, 2192, 2198-2201, 2249-2251, 2278-2298, 2308-2446
+src/training/trainer.py                     167     82    51%   112-113, 168-171, 188-190, 206-250, 275-276, 307-309, 327-419, 429-440
+src/training/visualization.py               379    129    66%   169-190, 203-224, 238-326, 337-403, 413-414, 693-697
+src/utils/sqs_consumer.py                   154    129    16%   71-90, 98-130, 134-154, 169-186, 198-227, 246-265, 269-289, 293-320, 335-359, 363-365, 380-385
+-----------------------------------------------------------------------
+TOTAL                                      3932   2603    34%
+Coverage HTML written to dir htmlcov
+Coverage XML written to file coverage.xml
+================= 81 passed, 14 skipped, 4 warnings in 29.00s ==================
+</div>
+        </div>
+        
+        <div class="footer">
+            <p>Generated by Test Report Generator v1.0</p>
+            <p>For more information, see <a href="TESTING_README.md">TESTING_README.md</a></p>
+        </div>
+    </div>
+</body>
+</html>
+        

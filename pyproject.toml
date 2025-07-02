@@ -1,0 +1,238 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "deepfake-detection"
+version = "0.1.0"
+description = "A comprehensive deep learning system for detecting deepfakes in images, videos, and audio"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Ajay Pathak", email = "ajay.pathak@example.com"}
+]
+keywords = ["deepfake", "detection", "machine-learning", "computer-vision", "audio-processing", "aws", "s3", "cloud"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Multimedia :: Sound/Audio",
+]
+requires-python = ">=3.9"
+dependencies = [
+    # Core deep learning framework
+    "tensorflow-macos>=2.15.0",
+    "tensorflow-metal>=1.0.0",
+    "keras>=2.15.0",
+    
+    # Computer vision and image processing
+    "opencv-python>=4.6.0",
+    "Pillow>=9.0.0",
+    
+    # Audio processing
+    "librosa>=0.9.0",
+    "soundfile>=0.10.0",
+    
+    # Video processing
+    "moviepy>=1.0.3",
+    
+    # Data manipulation and analysis
+    "numpy>=1.21.0",
+    "pandas>=1.3.0",
+    "scikit-learn>=1.0.0",
+    
+    # Natural language processing
+    "nltk>=3.8",
+    
+    # Visualization
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+    
+    # Utilities
+    "tqdm>=4.62.0",
+    "pathlib2>=2.3.0",
+    
+    # AWS S3 support
+    "boto3>=1.34.0",
+    "botocore>=1.34.0",
+    
+    # HTTP and URL handling (for enhanced S3 support)
+    "requests>=2.31.0",
+    "urllib3>=1.26.0",
+    
+    # Enhanced CLI and configuration
+    "click>=8.0.0",
+    "pyyaml>=6.0.0",
+    
+    # Additional data formats
+    "jsonschema>=4.17.0",
+]
+
+[project.optional-dependencies]
+# Development dependencies
+dev = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.0.0",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "isort>=5.0.0",
+    "flake8>=5.0.0",
+    "mypy>=1.0.0",
+]
+
+# Documentation
+docs = [
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+    "myst-parser>=0.18.0",
+]
+
+# Cloud and S3 enhanced features
+cloud = [
+    "awscli>=1.32.0",
+    "s3fs>=2023.12.0",
+    "aiobotocore>=2.11.0",
+    "boto3-stubs[s3]>=1.34.0",
+]
+
+# All optional dependencies
+all = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.0.0",
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "isort>=5.0.0",
+    "flake8>=5.0.0",
+    "mypy>=1.0.0",
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+    "myst-parser>=0.18.0",
+    "awscli>=1.32.0",
+    "s3fs>=2023.12.0",
+    "aiobotocore>=2.11.0",
+    "boto3-stubs[s3]>=1.34.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/deepfake-detection"
+Documentation = "https://deepfake-detection.readthedocs.io"
+Repository = "https://github.com/yourusername/deepfake-detection.git"
+"Bug Tracker" = "https://github.com/yourusername/deepfake-detection/issues"
+
+[project.scripts]
+deepfake-train = "src.training.train_deepfake_detector:main"
+deepfake-predict = "src.inference.predict_deepfake:main"
+deepfake-s3-predict = "predict_s3_deepfake:main"
+deepfake-video-pipeline = "src.utils.video_pipeline:main"
+deepfake-image-pipeline = "src.utils.image_pipeline:main"
+deepfake-audio-pipeline = "src.utils.audio_pipeline:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["src"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "tensorflow.*",
+    "keras.*",
+    "cv2.*",
+    "librosa.*",
+    "moviepy.*",
+    "boto3.*",
+    "botocore.*",
+    "s3fs.*",
+    "aiobotocore.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/env/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
