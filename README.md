@@ -152,7 +152,7 @@ export AWS_DEFAULT_REGION="us-east-1"
 aws configure
 
 # Method 3: Check setup
-python predict_s3_deepfake.py --setup-aws
+python src/aws/predict_s3_deepfake.py --setup-aws
 ```
 
 ### GPU Support
@@ -403,19 +403,20 @@ The system now supports direct processing of files from Amazon S3 with robust er
 
 ```bash
 # Predict on S3 image with automatic retry
-python predict_s3_deepfake.py s3://your-bucket/image.jpg
+python src/aws/predict_s3_deepfake.py s3://your-bucket/image.jpg
 
 # Predict on S3 video with custom credentials
-python predict_s3_deepfake.py s3://your-bucket/video.mp4 \
-    --aws-access-key-id YOUR_ACCESS_KEY \
-    --aws-secret-access-key YOUR_SECRET_KEY
+python src/aws/predict_s3_deepfake.py s3://your-bucket/video.mp4 \
+    --aws-access-key-id YOUR_KEY \
+    --aws-secret-access-key YOUR_SECRET \
+    --aws-region us-west-2
 
 # Use general inference script with S3
 python src/inference/predict_deepfake.py \
     --input s3://your-bucket/audio.wav
 
 # Setup AWS credentials
-python predict_s3_deepfake.py --setup-aws
+python src/aws/predict_s3_deepfake.py --setup-aws
 ```
 
 **Enhanced S3 Features:**

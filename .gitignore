@@ -67,12 +67,18 @@ models/checkpoints/*.h5
 cleaned_data/
 results/
 
-# Environment variables
+# Environment variables and config files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+aws_config.json
+
+# Docker files
+.env
+docker-compose.override.yml
+task-definition.json
 
 # Coverage reports
 htmlcov/

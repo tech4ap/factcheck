@@ -69,17 +69,17 @@ class S3FileHandler:
             logger.error(f"❌ Failed to initialize S3 client: {e}")
             self.s3_client = None
     
-    def parse_s3_url(self, s3_url: str) -> Tuple[str, str]:
+    def parse_s3_url(self, sqs_to_ml_url: str) -> Tuple[str, str]:
         """
         Parse S3 URL to extract bucket and key.
         
         Args:
-            s3_url: S3 URL (s3://bucket/key or https://bucket.s3.region.amazonaws.com/key)
+            sqs_to_ml_url: S3 URL (s3://bucket/key or https://bucket.s3.region.amazonaws.com/key)
             
         Returns:
             Tuple of (bucket_name, object_key)
         """
-        parsed = urlparse(s3_url)
+        parsed = urlparse(sqs_to_ml_url)
         
         if parsed.scheme == 's3':
             # s3://bucket/key format
@@ -91,21 +91,21 @@ class S3FileHandler:
                 bucket = parsed.netloc.split('.')[0]
                 key = parsed.path.lstrip('/')
             else:
-                raise ValueError(f"Invalid S3 URL format: {s3_url}")
+                raise ValueError(f"Invalid S3 URL format: {sqs_to_ml_url}")
         else:
             raise ValueError(f"Unsupported URL scheme: {parsed.scheme}")
         
         if not bucket or not key:
-            raise ValueError(f"Could not parse bucket and key from URL: {s3_url}")
+            raise ValueError(f"Could not parse bucket and key from URL: {sqs_to_ml_url}")
         
         return bucket, key
     
-    def download_file(self, s3_url: str, local_path: Optional[str] = None) -> str:
+    def download_file(self, sqs_to_ml_url: str, local_path: Optional[str] = None) -> str:
         """
         Download file from S3.
         
         Args:
-            s3_url: S3 URL of the file
+            sqs_to_ml_url: S3 URL of the file
             local_path: Local path to save file (optional, uses temp dir if not provided)
             
         Returns:
@@ -114,7 +114,7 @@ class S3FileHandler:
         if self.s3_client is None:
             raise RuntimeError("S3 client not initialized. Check AWS credentials.")
         
-        bucket, key = self.parse_s3_url(s3_url)
+        bucket, key = self.parse_s3_url(sqs_to_ml_url)
         
         # Determine local file path
         if local_path is None:
@@ -141,18 +141,18 @@ class S3FileHandler:
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == '404':
-                raise FileNotFoundError(f"File not found in S3: {s3_url}")
+                raise FileNotFoundError(f"File not found in S3: {sqs_to_ml_url}")
             else:
                 raise RuntimeError(f"S3 error ({error_code}): {e}")
         except Exception as e:
             raise RuntimeError(f"Failed to download from S3: {e}")
     
-    def get_file_info(self, s3_url: str) -> dict:
+    def get_file_info(self, sqs_to_ml_url: str) -> dict:
         """
         Get file information from S3.
         
         Args:
-            s3_url: S3 URL of the file
+            sqs_to_ml_url: S3 URL of the file
             
         Returns:
             Dictionary with file information
@@ -160,7 +160,7 @@ class S3FileHandler:
         if self.s3_client is None:
             raise RuntimeError("S3 client not initialized. Check AWS credentials.")
         
-        bucket, key = self.parse_s3_url(s3_url)
+        bucket, key = self.parse_s3_url(sqs_to_ml_url)
         
         try:
             response = self.s3_client.head_object(Bucket=bucket, Key=key)
@@ -176,7 +176,7 @@ class S3FileHandler:
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == '404':
-                raise FileNotFoundError(f"File not found in S3: {s3_url}")
+                raise FileNotFoundError(f"File not found in S3: {sqs_to_ml_url}")
             else:
                 raise RuntimeError(f"S3 error ({error_code}): {e}")
     
@@ -209,7 +209,7 @@ class S3FileHandler:
         if cleaned_count > 0:
             logger.info(f"🧹 Cleaned up {cleaned_count} temporary files")
 
-def download_from_s3(s3_url: str, 
+def download_from_s3(sqs_to_ml_url: str, 
                     aws_access_key_id: Optional[str] = None,
                     aws_secret_access_key: Optional[str] = None,
                     aws_session_token: Optional[str] = None,
@@ -218,7 +218,7 @@ def download_from_s3(s3_url: str,
     Convenience function to download a file from S3.
     
     Args:
-        s3_url: S3 URL of the file
+        sqs_to_ml_url: S3 URL of the file
         aws_access_key_id: AWS Access Key ID (optional)
         aws_secret_access_key: AWS Secret Access Key (optional)
         aws_session_token: AWS Session Token (optional)
@@ -234,7 +234,7 @@ def download_from_s3(s3_url: str,
         region_name=region_name
     )
     
-    return handler.download_file(s3_url)
+    return handler.download_file(sqs_to_ml_url)
 
 def is_s3_url(url: str) -> bool:
     """
@@ -261,18 +261,18 @@ def is_s3_url(url: str) -> bool:
     
     return False
 
-def get_file_extension_from_s3_url(s3_url: str) -> str:
+def get_file_extension_from_s3_url(sqs_to_ml_url: str) -> str:
     """
     Extract file extension from S3 URL.
     
     Args:
-        s3_url: S3 URL
+        sqs_to_ml_url: S3 URL
         
     Returns:
         File extension (e.g., '.jpg', '.mp4')
     """
     try:
-        _, key = S3FileHandler().parse_s3_url(s3_url)
+        _, key = S3FileHandler().parse_s3_url(sqs_to_ml_url)
         return Path(key).suffix.lower()
     except:
         return ''

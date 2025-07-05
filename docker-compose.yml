@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  deepfake-detector:
+    build: .
+    container_name: deepfake-sqs-consumer
+    environment:
+      # AWS Configuration
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      
+      # SQS Configuration
+      - QUEUE_URL=${QUEUE_URL}
+      - RESULT_QUEUE_URL=${RESULT_QUEUE_URL}
+      
+      # Application Configuration
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - PYTHONUNBUFFERED=1
+      
+      # Model Configuration
+      - MODELS_DIR=/app/models
+      
+    volumes:
+      # Mount models directory if you want to use local models
+      - ./models:/app/models:ro
+      
+      # Mount logs directory for persistent logging
+      - ./logs:/app/logs
+      
+      # Mount temp directories for caching
+      - /tmp/deepfake_cache:/tmp/deepfake_cache
+      - /tmp/deepfake_s3_cache:/tmp/deepfake_s3_cache
+      
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+    
+    # Command can be overridden
+    command: ["python", "src/aws/sqs_deepfake_consumer.py"]
+
+  # Optional: LocalStack for local SQS testing
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack-sqs
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/tmp/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    profiles:
+      - local-testing 

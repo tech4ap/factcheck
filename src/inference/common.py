@@ -251,13 +251,13 @@ def list_available_models(predictor: 'EnhancedDeepfakePredictor') -> None:
         print(f"   Path: {metadata.get('model_path', 'N/A')}")
         print()
 
-def validate_s3_url_and_credentials(s3_url: str, 
+def validate_s3_url_and_credentials(sqs_to_ml_url: str, 
                                    aws_access_key_id: Optional[str] = None) -> None:
     """
     Validate S3 URL format and check for AWS credentials.
     
     Args:
-        s3_url: S3 URL to validate
+        sqs_to_ml_url: S3 URL to validate
         aws_access_key_id: AWS access key (if provided)
         
     Raises:
@@ -273,9 +273,9 @@ def validate_s3_url_and_credentials(s3_url: str,
         sys.path.append(str(src_path))
         from utils.s3_utils import is_s3_url
     
-    if not is_s3_url(s3_url):
+    if not is_s3_url(sqs_to_ml_url):
         raise ValueError(
-            f"Invalid S3 URL: {s3_url}\n"
+            f"Invalid S3 URL: {sqs_to_ml_url}\n"
             "💡 S3 URLs should be in format: s3://bucket/path/to/file.ext"
         )
     
@@ -299,7 +299,7 @@ def cleanup_temporary_file(file_path: Optional[str]) -> None:
         except Exception as e:
             logger.warning(f"Could not cleanup temporary file: {e}")
 
-def get_s3_file_info(s3_url: str, 
+def get_s3_file_info(sqs_to_ml_url: str, 
                     aws_access_key_id: Optional[str] = None,
                     aws_secret_access_key: Optional[str] = None,
                     aws_session_token: Optional[str] = None,
@@ -308,7 +308,7 @@ def get_s3_file_info(s3_url: str,
     Get S3 file information safely with error handling.
     
     Args:
-        s3_url: S3 URL of the file
+        sqs_to_ml_url: S3 URL of the file
         aws_access_key_id: AWS access key ID
         aws_secret_access_key: AWS secret access key
         aws_session_token: AWS session token
@@ -339,7 +339,7 @@ def get_s3_file_info(s3_url: str,
             logger.warning("S3 client not available - skipping S3 metadata")
             return None
         
-        file_info = s3_handler.get_file_info(s3_url)
+        file_info = s3_handler.get_file_info(sqs_to_ml_url)
         logger.info(f"📊 S3 File info: {file_info['size']:,} bytes, {file_info['content_type']}")
         return file_info
         
