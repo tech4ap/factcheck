@@ -8,9 +8,10 @@ This comprehensive guide covers both Amazon S3 and SQS integration for the deepf
 2. [S3 Integration](#-s3-integration)
 3. [SQS Integration](#-sqs-integration)
 4. [Combined S3 + SQS Workflow](#-combined-s3--sqs-workflow)
-5. [Configuration & Security](#-configuration--security)
-6. [Usage Examples](#-usage-examples)
-7. [Troubleshooting](#-troubleshooting)
+5. [AWS Credentials Configuration](#-aws-credentials-configuration)
+6. [Configuration & Security](#-configuration--security)
+7. [Usage Examples](#-usage-examples)
+8. [Troubleshooting](#-troubleshooting)
 
 ## 🌐 Overview
 
@@ -47,7 +48,7 @@ S3 Bucket → SQS Queue → Deepfake Detection → Results → Callback URL
 - AWS credentials support via command line arguments
 - Enhanced result output with S3 metadata
 
-#### **Dedicated S3 Script** (`predict_s3_deepfake.py`)
+#### **Dedicated S3 Script** (`src/aws/predict_s3_deepfake.py`)
 - Simplified S3-focused interface
 - Comprehensive error handling and user guidance
 - Built-in AWS credentials setup instructions
@@ -76,7 +77,7 @@ All existing media types are supported via S3:
 
 ```bash
 # Simple S3 file detection
-python predict_s3_deepfake.py s3://capstone-development/file.jpg
+python src/aws/predict_s3_deepfake.py s3://capstone-development/file.jpg
 
 # Using the general inference script
 python src/inference/predict_deepfake.py --input s3://bucket/file.mp4
@@ -86,28 +87,28 @@ python src/inference/predict_deepfake.py --input s3://bucket/file.mp4
 
 ```bash
 # With custom AWS credentials
-python predict_s3_deepfake.py s3://bucket/file.jpg \
+python src/aws/predict_s3_deepfake.py s3://bucket/file.jpg \
   --aws-access-key-id YOUR_KEY \
   --aws-secret-access-key YOUR_SECRET
 
 # With custom confidence threshold
-python predict_s3_deepfake.py s3://bucket/file.wav --threshold 0.8
+python src/aws/predict_s3_deepfake.py s3://bucket/file.wav --threshold 0.8
 
 # Save results to file
-python predict_s3_deepfake.py s3://bucket/file.mp4 --output results.json
+python src/aws/predict_s3_deepfake.py s3://bucket/file.mp4 --output results.json
 
 # Different AWS region
-python predict_s3_deepfake.py s3://bucket/file.jpg --aws-region eu-west-1
+python src/aws/predict_s3_deepfake.py s3://bucket/file.jpg --aws-region eu-west-1
 ```
 
 #### **S3 Setup and Help**
 
 ```bash
 # Check AWS credentials setup
-python predict_s3_deepfake.py --setup-aws
+python src/aws/predict_s3_deepfake.py --setup-aws
 
 # View help for S3-specific script
-python predict_s3_deepfake.py --help
+python src/aws/predict_s3_deepfake.py --help
 ```
 
 ### **S3 Programmatic Usage**
@@ -152,7 +153,7 @@ The SQS consumer expects JSON messages with the following structure:
 
 ```json
 {
-  "s3_url": "s3://bucket/path/to/file.ext",
+  "sqs_to_ml_url": "s3://bucket/path/to/file.ext",
   "callback_url": "https://api.example.com/callback",
   "request_id": "unique-request-id",
   "confidence_threshold": 0.5,
@@ -165,7 +166,7 @@ The SQS consumer expects JSON messages with the following structure:
 ```
 
 #### **Required Fields**
-- `s3_url`: S3 URL of the file to analyze (supports images, videos, audio)
+- `sqs_to_ml_url`: S3 URL of the file to analyze (supports images, videos, audio)
 
 #### **Optional Fields**
 - `callback_url`: URL to POST results to after processing
@@ -198,10 +199,10 @@ export QUEUE_URL="https://sqs.us-east-1.amazonaws.com/123456789012/deepfake-queu
 
 ```bash
 # Start with environment variables
-python sqs_deepfake_consumer.py
+python src/aws/sqs_deepfake_consumer.py
 
 # Or with command line arguments
-python sqs_deepfake_consumer.py \
+python src/aws/sqs_deepfake_consumer.py \
   --queue-url "https://sqs.us-east-1.amazonaws.com/123456789012/deepfake-queue" \
   --aws-access-key-id YOUR_KEY \
   --aws-secret-access-key YOUR_SECRET
@@ -231,7 +232,7 @@ After processing, the system returns a comprehensive result:
 ```json
 {
   "request_id": "unique-request-id",
-  "s3_url": "s3://bucket/file.ext",
+  "sqs_to_ml_url": "s3://bucket/file.ext",
   "file_path": "s3://bucket/file.ext",
   "local_path": "/tmp/deepfake_s3_cache/file.ext",
   "file_type": "image",
@@ -247,7 +248,7 @@ After processing, the system returns a comprehensive result:
     "last_modified": "2025-01-01T10:00:00.000Z"
   },
   "original_message": {
-    "s3_url": "s3://bucket/file.ext",
+    "sqs_to_ml_url": "s3://bucket/file.ext",
     "callback_url": "https://api.example.com/callback",
     "request_id": "unique-request-id"
   }
@@ -260,18 +261,18 @@ After processing, the system returns a comprehensive result:
 
 ```bash
 # Generate test message for your S3 URL
-python sqs_deepfake_consumer.py --create-test-message \
+python src/aws/sqs_deepfake_consumer.py --create-test-message \
   "s3://capstone-development/f84ca5f4-ff77-4f0e-8da1-67a3105a9f52.png"
 
 # Interactive test script
-python test_sqs_message.py
+python src/aws/test_sqs_message.py
 
 # Validate queue connection
-python sqs_deepfake_consumer.py --validate-queue \
+python src/aws/sqs_deepfake_consumer.py --validate-queue \
   --queue-url "https://sqs.us-east-1.amazonaws.com/123456789012/deepfake-queue"
 
 # Run once for testing
-python sqs_deepfake_consumer.py --run-once
+python src/aws/sqs_deepfake_consumer.py --run-once
 ```
 
 #### **Programmatic SQS Usage**
@@ -281,7 +282,7 @@ from src.utils.sqs_consumer import SQSDeepfakeConsumer, create_test_message
 
 # Create test message
 message = create_test_message(
-    s3_url="s3://capstone-development/file.png",
+    sqs_to_ml_url="s3://capstone-development/file.png",
     callback_url="https://api.example.com/callback",
     confidence_threshold=0.7
 )
@@ -320,7 +321,7 @@ The most powerful integration combines both S3 and SQS for automated cloud proce
 
 ```json
 {
-  "s3_url": "s3://capstone-development/video.mp4",
+  "sqs_to_ml_url": "s3://capstone-development/video.mp4",
   "callback_url": "https://myapi.com/deepfake-results",
   "request_id": "req_001",
   "confidence_threshold": 0.6,
@@ -347,6 +348,108 @@ The SQS consumer leverages the modular architecture:
 - **`src/inference/predict_deepfake.py`**: Core prediction logic
 - **`src/utils/s3_utils.py`**: S3 file handling
 - **`PredictionContext`**: Automatic cleanup of temporary files
+
+## 🔧 AWS Credentials Configuration
+
+### **Quick Setup**
+
+1. **Copy the template configuration:**
+   ```bash
+   cp aws_config_template.json aws_config.json
+   ```
+
+2. **Edit `aws_config.json` with your AWS credentials:**
+   ```json
+   {
+     "aws": {
+       "access_key_id": "YOUR_ACTUAL_ACCESS_KEY_ID",
+       "secret_access_key": "YOUR_ACTUAL_SECRET_ACCESS_KEY", 
+       "region": "us-east-1",
+       "session_token": null
+     }
+   }
+   ```
+
+3. **The `aws_config.json` file is automatically ignored by git** (see `.gitignore`), so your credentials won't be committed.
+
+### **Configuration Options**
+
+#### **1. Configuration File (Recommended)**
+- Create `aws_config.json` from the template
+- Secure and easy to manage
+- Automatically excluded from version control
+
+#### **2. Environment Variables**
+Set these environment variables and they'll be loaded automatically:
+```bash
+export AWS_ACCESS_KEY_ID="your_access_key_id"
+export AWS_SECRET_ACCESS_KEY="your_secret_access_key"
+export AWS_REGION="us-east-1"
+```
+
+#### **3. Custom Configuration File**
+```bash
+python src/aws/predict_s3_deepfake.py s3://bucket/file.jpg --config my_custom_aws_config.json
+```
+
+### **Configuration Usage Examples**
+
+#### **Basic Usage**
+```bash
+# Uses aws_config.json by default
+python src/aws/predict_s3_deepfake.py s3://bucket/image.jpg
+```
+
+#### **With Custom Config**
+```bash
+# Uses specific config file
+python src/aws/predict_s3_deepfake.py s3://bucket/video.mp4 --config prod_aws_config.json
+```
+
+#### **With Threshold and Output**
+```bash
+python src/aws/predict_s3_deepfake.py s3://bucket/audio.wav --threshold 0.8 --output results.json
+```
+
+### **Configuration Schema**
+
+The complete configuration file supports these options:
+
+```json
+{
+  "aws": {
+    "access_key_id": "string",
+    "secret_access_key": "string",
+    "region": "string (default: us-east-1)",
+    "session_token": "string (optional)"
+  },
+  "data": {
+    "temp_dir": "string (default: /tmp/deepfake_cache)",
+    "s3_cache_dir": "string (default: /tmp/deepfake_s3_cache)",
+    "cleanup_temp_files": "boolean (default: true)"
+  },
+  "logging": {
+    "level": "string (default: INFO)",
+    "log_to_console": "boolean (default: true)"
+  }
+}
+```
+
+Only the AWS credentials are required - other settings have sensible defaults.
+
+### **Interactive Setup Script**
+
+Use the interactive setup script for easy configuration:
+
+```bash
+python src/aws/setup_aws_config.py
+```
+
+This script provides:
+- Interactive credential input
+- Configuration validation
+- Status checking
+- Usage examples
 
 ## 🔐 Configuration & Security
 
@@ -416,11 +519,14 @@ aws configure
 
 ### **Security Best Practices**
 
-1. **Use IAM roles when running on EC2**
-2. **Rotate access keys regularly**
-3. **Use least-privilege permissions**
-4. **Enable CloudTrail for audit logging**
-5. **Use VPC endpoints for private communication**
+1. **Never commit `aws_config.json`** - It's automatically excluded by `.gitignore`
+2. **Use IAM roles** when possible instead of access keys
+3. **Rotate credentials** regularly
+4. **Use least privilege** - only grant necessary S3 permissions
+5. **Consider using AWS profiles** instead of hardcoded credentials
+6. **Use IAM roles when running on EC2**
+7. **Enable CloudTrail for audit logging**
+8. **Use VPC endpoints for private communication**
 
 ## 📚 Usage Examples
 
@@ -428,13 +534,13 @@ aws configure
 
 ```bash
 # Direct S3 file processing
-python predict_s3_deepfake.py s3://bucket/image.jpg
+python src/aws/predict_s3_deepfake.py s3://bucket/image.jpg
 
 # With custom threshold
-python predict_s3_deepfake.py s3://bucket/video.mp4 --threshold 0.8
+python src/aws/predict_s3_deepfake.py s3://bucket/video.mp4 --threshold 0.8
 
 # Save results to JSON
-python predict_s3_deepfake.py s3://bucket/audio.wav --output results.json
+python src/aws/predict_s3_deepfake.py s3://bucket/audio.wav --output results.json
 ```
 
 ### **SQS Message Processing**
@@ -444,13 +550,13 @@ python predict_s3_deepfake.py s3://bucket/audio.wav --output results.json
 aws sqs send-message \
   --queue-url "YOUR_QUEUE_URL" \
   --message-body '{
-    "s3_url": "s3://capstone-development/file.png",
+    "sqs_to_ml_url": "s3://capstone-development/file.png",
     "request_id": "test_001",
     "callback_url": "https://api.example.com/callback"
   }'
 
 # Start SQS consumer
-python sqs_deepfake_consumer.py --queue-url "YOUR_QUEUE_URL"
+python src/aws/sqs_deepfake_consumer.py --queue-url "YOUR_QUEUE_URL"
 ```
 
 ### **Production Deployment**
@@ -469,7 +575,7 @@ ENV AWS_REGION="us-east-1"
 ENV MODELS_DIR="/app/models"
 ENV LOG_LEVEL="INFO"
 
-CMD ["python", "sqs_deepfake_consumer.py"]
+CMD ["python", "src/aws/sqs_deepfake_consumer.py"]
 ```
 
 #### **Environment Variables for Production**
@@ -541,8 +647,31 @@ The consumer tracks:
 aws sts get-caller-identity
 
 # Setup AWS credentials
-python predict_s3_deepfake.py --setup-aws
+python src/aws/predict_s3_deepfake.py --setup-aws
 ```
+
+#### **Configuration Issues**
+
+**Missing Configuration:**
+```
+Error: AWS credentials not found
+```
+**Solution:** Ensure you have either:
+- A `aws_config.json` file with valid credentials
+- Environment variables set
+- Or specify a custom config file with `--config`
+
+**Invalid Credentials:**
+```
+Error: Access denied
+```
+**Solution:** Verify your AWS credentials are correct and have S3 access permissions.
+
+**Config File Not Found:**
+```
+Error: Configuration file not found
+```
+**Solution:** Create `aws_config.json` from `aws_config_template.json` or specify the correct path with `--config`.
 
 #### **Model Loading Issues**
 
@@ -566,11 +695,11 @@ python src/inference/predict_deepfake.py --list-models
 ```bash
 # Enable debug logging for S3
 export LOG_LEVEL=DEBUG
-python predict_s3_deepfake.py s3://bucket/file.jpg --verbose
+python src/aws/predict_s3_deepfake.py s3://bucket/file.jpg --verbose
 
 # Enable debug logging for SQS
 export LOG_LEVEL=DEBUG
-python sqs_deepfake_consumer.py --run-once
+python src/aws/sqs_deepfake_consumer.py --run-once
 ```
 
 ### **Scaling Considerations**
@@ -613,7 +742,7 @@ s3_client.upload_file('local_file.jpg', 'bucket', 'file.jpg')
 
 # Send SQS message for processing
 message = {
-    "s3_url": "s3://bucket/file.jpg",
+    "sqs_to_ml_url": "s3://bucket/file.jpg",
     "callback_url": "https://myapp.com/deepfake-result",
     "request_id": "req_12345"
 }
@@ -639,7 +768,7 @@ def lambda_handler(event, context):
     # Send SQS message for deepfake detection
     sqs = boto3.client('sqs')
     message = {
-        "s3_url": f"s3://{bucket}/{key}",
+        "sqs_to_ml_url": f"s3://{bucket}/{key}",
         "request_id": context.aws_request_id,
         "callback_url": "https://myapi.com/deepfake-result"
     }
@@ -694,11 +823,11 @@ def lambda_handler(event, context):
 
 ### **Quick Setup**
 
-1. **Install dependencies**: `pip install boto3 botocore requests`
-2. **Setup AWS credentials**: `python predict_s3_deepfake.py --setup-aws`
-3. **Test S3 integration**: `python predict_s3_deepfake.py s3://your-bucket/file.jpg`
-4. **Test SQS integration**: `python test_sqs_message.py`
-5. **Start SQS consumer**: `python sqs_deepfake_consumer.py --queue-url YOUR_QUEUE_URL`
+1. **Install dependencies**: `pip install -e .`
+2. **Setup AWS credentials**: `python src/aws/predict_s3_deepfake.py --setup-aws`
+3. **Test S3 integration**: `python src/aws/predict_s3_deepfake.py s3://your-bucket/file.jpg`
+4. **Test SQS integration**: `python src/aws/test_sqs_message.py`
+5. **Start SQS consumer**: `python src/aws/sqs_deepfake_consumer.py --queue-url YOUR_QUEUE_URL`
 
 ### **Next Steps**
 

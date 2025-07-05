@@ -1,0 +1,17 @@
+{
+  "aws": {
+    "access_key_id": "YOUR_AWS_ACCESS_KEY_ID",
+    "secret_access_key": "YOUR_AWS_SECRET_ACCESS_KEY", 
+    "region": "us-east-1",
+    "session_token": null
+  },
+  "data": {
+    "temp_dir": "/tmp/deepfake_cache",
+    "s3_cache_dir": "/tmp/deepfake_s3_cache",
+    "cleanup_temp_files": true
+  },
+  "logging": {
+    "level": "INFO",
+    "log_to_console": true
+  }
+} 

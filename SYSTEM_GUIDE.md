@@ -265,16 +265,16 @@ python src/inference/predict_deepfake.py \
 #### **S3 Integration**
 ```bash
 # S3 prediction with enhanced error handling
-python predict_s3_deepfake.py s3://bucket/media.mp4
+python src/aws/predict_s3_deepfake.py s3://bucket/media.mp4
 
 # S3 with custom credentials
-python predict_s3_deepfake.py s3://bucket/media.wav \
+python src/aws/predict_s3_deepfake.py s3://bucket/media.wav \
     --aws-access-key-id KEY \
     --aws-secret-access-key SECRET \
     --output result.json
 
 # AWS setup
-python predict_s3_deepfake.py --setup-aws
+python src/aws/predict_s3_deepfake.py --setup-aws
 ```
 
 ### **3. Core Framework Usage**
@@ -380,13 +380,13 @@ export TF_GPU_ALLOCATOR=cuda_malloc_async
 **S3 Errors:**
 ```bash
 # Test AWS credentials
-python predict_s3_deepfake.py --setup-aws
+python src/aws/predict_s3_deepfake.py --setup-aws
 
 # Check S3 access
 aws s3 ls s3://your-bucket/
 
 # Use verbose mode
-python predict_s3_deepfake.py s3://bucket/file.jpg --verbose
+python src/aws/predict_s3_deepfake.py s3://bucket/file.jpg --verbose
 ```
 
 **Model Loading Errors:**
