@@ -1,9 +1,31 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.12-slim-bookworm AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies needed for building
+RUN apt-get update && apt-get install -y \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+
+# Copy project files
+COPY pyproject.toml ./
+COPY README.md ./
+COPY uv.lock ./
+
+# Install the project and its dependencies (excluding dev dependencies)
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --no-dev
+
+# Stage 2: Runtime
+FROM python:3.12-slim-bookworm AS runtime
+
+# Install runtime system dependencies
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsm6 \
@@ -13,34 +35,27 @@ RUN apt-get update && apt-get install -y \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
-COPY pyproject.toml ./
+# Set working directory
+WORKDIR /app
 
-# The installer requires curl (and certificates) to download the release archive
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
-
-# Download the latest installer
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
-
-# Run the installer then remove it
-RUN sh /uv-installer.sh && rm /uv-installer.sh
-
-COPY --from=ghcr.io/astral-sh/uv:0.7.19 /uv /uvx /bin/
-
-# Ensure the installed binary is on the `PATH`
-ENV PATH="/root/.local/bin/:$PATH"
+# Copy the application and its virtual environment from the builder stage
+COPY --from=builder /app/.venv /app/.venv
 
 # Copy the application code
-COPY src/ ./app/src/
-COPY models/ ./app/models/
+COPY src/ ./src/
+COPY models/ ./models/ 
+
+# Make sure we have the pyproject.toml for proper Python path setup
+COPY pyproject.toml ./
 
 # Create necessary directories
 RUN mkdir -p /tmp/deepfake_cache /tmp/deepfake_s3_cache logs
 
 # Set environment variables
-ENV PYTHONPATH=/app/src
+ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 ENV LOG_LEVEL=INFO
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
@@ -50,4 +65,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 EXPOSE 8080
 
 # Default command - run SQS consumer
-CMD ["python", "/app/src/aws/sqs_deepfake_consumer.py"] 
+CMD ["python", "-m", "src.aws.sqs_deepfake_consumer"] 

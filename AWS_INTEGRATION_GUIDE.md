@@ -1,27 +1,27 @@
-# 🌊 AWS Integration Guide for Deepfake Detection
+# AWS Integration Guide for Deepfake Detection
 
 This comprehensive guide covers both Amazon S3 and SQS integration for the deepfake detection system, enabling cloud-based file processing and message queue automation.
 
-## 📋 Table of Contents
+## Table of Contents
 
-1. [Overview](#-overview)
-2. [S3 Integration](#-s3-integration)
-3. [SQS Integration](#-sqs-integration)
-4. [Combined S3 + SQS Workflow](#-combined-s3--sqs-workflow)
-5. [AWS Credentials Configuration](#-aws-credentials-configuration)
-6. [Configuration & Security](#-configuration--security)
-7. [Usage Examples](#-usage-examples)
-8. [Troubleshooting](#-troubleshooting)
+1. [Overview](#overview)
+2. [S3 Integration](#s3-integration)
+3. [SQS Integration](#sqs-integration)
+4. [Combined S3 + SQS Workflow](#combined-s3--sqs-workflow)
+5. [AWS Credentials Configuration](#aws-credentials-configuration)
+6. [Configuration & Security](#configuration--security)
+7. [Usage Examples](#usage-examples)
+8. [Troubleshooting](#troubleshooting)
 
-## 🌐 Overview
+## Overview
 
 The deepfake detection system provides comprehensive AWS integration supporting:
 
-- **📦 S3 Integration**: Direct processing of files stored in Amazon S3 buckets
-- **📨 SQS Integration**: Automated processing via message queue system
-- **🔄 Combined Workflow**: SQS messages triggering S3 file processing
-- **🔐 Multiple Authentication**: Environment variables, CLI configuration, IAM roles
-- **⚡ Production Ready**: Scalable, secure, and fully automated
+- **S3 Integration**: Direct processing of files stored in Amazon S3 buckets
+- **SQS Integration**: Automated processing via message queue system
+- **Combined Workflow**: SQS messages triggering S3 file processing
+- **Multiple Authentication**: Environment variables, CLI configuration, IAM roles
+- **Production Ready**: Scalable, secure, and fully automated
 
 ### **Architecture Overview**
 
@@ -31,7 +31,7 @@ S3 Bucket → SQS Queue → Deepfake Detection → Results → Callback URL
  Media Files → JSON Message → ML Models → JSON Response → POST
 ```
 
-## 📦 S3 Integration
+## S3 Integration
 
 ### **Core Components**
 
@@ -135,7 +135,7 @@ print(f"S3 File: {result['is_s3_file']}")
 print(f"Downloaded to: {result['local_path']}")
 ```
 
-## 📨 SQS Integration
+## SQS Integration
 
 ### **SQS Architecture**
 
@@ -303,7 +303,7 @@ def custom_handler(result):
 consumer.start_consuming(message_handler=custom_handler)
 ```
 
-## 🔄 Combined S3 + SQS Workflow
+## Combined S3 + SQS Workflow
 
 ### **End-to-End Processing**
 
@@ -349,7 +349,7 @@ The SQS consumer leverages the modular architecture:
 - **`src/utils/s3_utils.py`**: S3 file handling
 - **`PredictionContext`**: Automatic cleanup of temporary files
 
-## 🔧 AWS Credentials Configuration
+## AWS Credentials Configuration
 
 ### **Quick Setup**
 
@@ -451,7 +451,7 @@ This script provides:
 - Status checking
 - Usage examples
 
-## 🔐 Configuration & Security
+## Configuration & Security
 
 ### **Authentication Methods**
 
@@ -528,7 +528,7 @@ aws configure
 7. **Enable CloudTrail for audit logging**
 8. **Use VPC endpoints for private communication**
 
-## 📚 Usage Examples
+## Usage Examples
 
 ### **Basic S3 Processing**
 
@@ -599,15 +599,15 @@ The consumer tracks:
 
 #### **Example Log Output**
 ```
-2025-01-01 12:00:00,000 - INFO - 🚀 Starting SQS consumer for queue: https://sqs.us-east-1.amazonaws.com/123456789012/deepfake-queue
-2025-01-01 12:00:01,000 - INFO - ✅ Loaded models: ['image', 'video', 'audio']
-2025-01-01 12:00:02,000 - INFO - 📨 Received 1 message(s)
-2025-01-01 12:00:03,000 - INFO - 🔍 Processing deepfake detection for: s3://bucket/file.jpg (ID: req_12345)
-2025-01-01 12:00:05,000 - INFO - ✅ Detection complete - FAKE (confidence: 73.1%) for req_12345
-2025-01-01 12:00:06,000 - INFO - ✅ Message processed and deleted
+2025-01-01 12:00:00,000 - INFO - Starting SQS consumer for queue: https://sqs.us-east-1.amazonaws.com/123456789012/deepfake-queue
+2025-01-01 12:00:01,000 - INFO - Loaded models: ['image', 'video', 'audio']
+2025-01-01 12:00:02,000 - INFO - Received 1 message(s)
+2025-01-01 12:00:03,000 - INFO - Processing deepfake detection for: s3://bucket/file.jpg (ID: req_12345)
+2025-01-01 12:00:05,000 - INFO - Detection complete - FAKE (confidence: 73.1%) for req_12345
+2025-01-01 12:00:06,000 - INFO - Message processed and deleted
 ```
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### **Common Issues and Solutions**
 
@@ -615,28 +615,28 @@ The consumer tracks:
 
 **S3 Access Denied:**
 ```
-❌ Failed to download S3 file: Access Denied
-💡 Check S3 bucket permissions and AWS credentials
+Failed to download S3 file: Access Denied
+Check S3 bucket permissions and AWS credentials
 ```
 
 **S3 File Not Found:**
 ```
-❌ S3 file not found: s3://bucket/file.jpg
-💡 Verify the S3 URL and file exists
+S3 file not found: s3://bucket/file.jpg
+Verify the S3 URL and file exists
 ```
 
 #### **SQS Connection Issues**
 
 **SQS Connection Errors:**
 ```
-❌ AWS credentials not found!
-💡 Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables
+AWS credentials not found!
+Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables
 ```
 
 **Queue Not Found:**
 ```
-❌ SQS queue does not exist: https://sqs.us-east-1.amazonaws.com/123456789012/wrong-queue
-💡 Verify the queue URL and region
+SQS queue does not exist: https://sqs.us-east-1.amazonaws.com/123456789012/wrong-queue
+Verify the queue URL and region
 ```
 
 #### **Authentication Issues**
@@ -677,8 +677,8 @@ Error: Configuration file not found
 
 **No Models Found:**
 ```
-❌ No models could be loaded!
-💡 Train models using: python train_and_save_models.py --demo
+No models could be loaded!
+Train models using: python train_and_save_models.py --demo
 ```
 
 **Model Directory Issues:**
@@ -716,7 +716,7 @@ python src/aws/sqs_deepfake_consumer.py --run-once
 - Cache models to reduce startup time
 - Use CloudWatch for monitoring and alerting
 
-## 🎯 Use Cases
+## Use Cases
 
 ### **Real-World Applications**
 
@@ -781,32 +781,32 @@ def lambda_handler(event, context):
     return {'statusCode': 200}
 ```
 
-## 🚀 Production Readiness
+## Production Readiness
 
 ### **Features Implemented**
 
-#### **✅ S3 File Operations**
+#### **S3 File Operations**
 - [x] Parse S3 URLs (s3:// and https:// formats)
 - [x] Download files to temporary storage
 - [x] Get file metadata (size, content type, etc.)
 - [x] Automatic cleanup of temporary files
 - [x] Error handling for missing files/permissions
 
-#### **✅ SQS Message Processing**
+#### **SQS Message Processing**
 - [x] JSON message parsing and validation
 - [x] Long polling for efficient message retrieval
 - [x] Automatic message deletion after processing
 - [x] Dead letter queue support
 - [x] Comprehensive error handling and logging
 
-#### **✅ Integration Features**
+#### **Integration Features**
 - [x] Seamless integration with existing inference pipeline
 - [x] Auto-detection of S3 URLs vs local files
 - [x] Support for all media types (image, video, audio)
 - [x] Enhanced result output with S3 and SQS metadata
 - [x] Callback URL support for result delivery
 
-#### **✅ Security & Authentication**
+#### **Security & Authentication**
 - [x] Multiple authentication methods
 - [x] IAM role support for EC2
 - [x] Least-privilege permissions
@@ -819,7 +819,7 @@ def lambda_handler(event, context):
 - Valid AWS account and credentials
 - Appropriate S3 and SQS permissions
 
-## 📞 Getting Started
+## Getting Started
 
 ### **Quick Setup**
 
@@ -839,4 +839,4 @@ def lambda_handler(event, context):
 
 ---
 
-**The deepfake detection system now provides comprehensive AWS integration, enabling scalable cloud-based processing with both S3 file storage and SQS message queuing! 🌟** 
+**The deepfake detection system now provides comprehensive AWS integration, enabling scalable cloud-based processing with both S3 file storage and SQS message queuing!** 

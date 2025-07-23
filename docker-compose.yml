@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   deepfake-detector:
     build: .
@@ -53,7 +51,7 @@ services:
           cpus: '1.0'
     
     # Command can be overridden
-    command: ["python", "src/aws/sqs_deepfake_consumer.py"]
+    command: ["python", "-m", "src.aws.sqs_deepfake_consumer"]
 
   # Optional: LocalStack for local SQS testing
   localstack:

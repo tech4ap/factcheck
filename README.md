@@ -5,21 +5,21 @@ A comprehensive deep learning system for detecting deepfakes in images, videos, 
 **Author**: Ajay Pathak  
 **License**: Apache License 2.0
 
-## 🚀 Features
+## Features
 
 - **Multi-Media Support**: Detect deepfakes in images, videos, and audio
-- **☁️ S3 Integration**: Direct processing of files from Amazon S3 with automatic download and cleanup
+- **S3 Integration**: Direct processing of files from Amazon S3 with automatic download and cleanup
 - **GPU Acceleration**: Optimized for Apple Silicon (M1/M2/M3/M4) and NVIDIA GPUs
-- **🏗️ Optimized Architecture**: Modular design with centralized configuration and enhanced error handling
-- **📝 Enhanced Logging**: Emoji-enhanced, color-coded logging with automatic rotation
-- **🛡️ Robust Error Handling**: Structured exception system with detailed context
-- **⚡ Performance Monitoring**: Built-in performance tracking and resource management
+- **Optimized Architecture**: Modular design with centralized configuration and enhanced error handling
+- **Enhanced Logging**: Color-coded logging with automatic rotation
+- **Robust Error Handling**: Structured exception system with detailed context
+- **Performance Monitoring**: Built-in performance tracking and resource management
 - **Advanced Models**: Uses EfficientNet and ResNet architectures for images, custom CNNs for video frames, and spectrogram-based models for audio
 - **Ensemble Learning**: Combines predictions from all three models for improved accuracy
 - **Memory Efficient**: Optimized data loading with batch processing and garbage collection
 - **Production Ready**: Comprehensive testing, validation, and deployment capabilities
 
-## 🏗️ Architecture
+## Architecture
 
 ### System Architecture
 
@@ -27,7 +27,7 @@ The system features a modern, optimized architecture with clean separation of co
 
 ```
 src/
-├── core/                     # 🔧 Core Architecture (NEW!)
+├── core/                     # Core Architecture (NEW!)
 │   ├── __init__.py          # Central exports and API
 │   ├── config.py            # Centralized configuration management
 │   ├── logging_config.py    # Unified logging system
@@ -55,7 +55,7 @@ Combines predictions from all three models using weighted averaging:
 - Video: 40% weight  
 - Audio: 20% weight
 
-## 🚀 Optimization Features
+## Optimization Features
 
 ### **Centralized Configuration System**
 - Single source of truth for all settings
@@ -64,7 +64,6 @@ Combines predictions from all three models using weighted averaging:
 - Support for environment variables and config files
 
 ### **Enhanced Logging System**
-- Emoji-enhanced messages for better UX (📝 🚀 ⚠️ ❌)
 - Colored console output with automatic formatting
 - Configurable log levels per module
 - Automatic log rotation and file management
@@ -89,11 +88,11 @@ Combines predictions from all three models using weighted averaging:
 - Declarative approach reduces boilerplate code
 - Composable decorators for complex behaviors
 
-## 🛠️ Installation
+## Installation
 
 ### Prerequisites
 
-- Python 3.9 or higher
+- Python 3.12 or higher
 - macOS (for Apple Silicon GPU support) or Linux/Windows (for NVIDIA GPU support)
 
 ### Option 1: Using uv (Recommended)
@@ -163,7 +162,7 @@ The system automatically detects and configures available GPUs:
 - **NVIDIA GPUs**: Uses `tensorflow-gpu` for CUDA acceleration
 - **CPU Fallback**: Automatically falls back to CPU if no GPU is available
 
-## 🔧 Configuration
+## Configuration
 
 ### **Using the Optimized Configuration System**
 
@@ -240,7 +239,7 @@ config = get_config().override(**{
 })
 ```
 
-## 📊 Data Preparation
+## Data Preparation
 
 The system expects your data to be organized in the following structure:
 
@@ -293,7 +292,7 @@ This will:
 - Create visualizations of data distribution
 - Validate data quality and format
 
-## 🎯 Training Models
+## Training Models
 
 ### **Quick Start with Optimized System**
 
@@ -317,7 +316,7 @@ from src.core import get_config, get_logger
 config = get_config()
 logger = get_logger(__name__)
 
-logger.info("🚀 Starting training with optimized configuration")
+logger.info("Starting training with optimized configuration")
 # Configuration automatically applied
 ```
 
@@ -355,7 +354,7 @@ The system automatically:
 - Falls back to CPU if GPU is unavailable
 - Monitors resource usage and provides warnings
 
-## 🔍 Making Predictions
+## Making Predictions
 
 ### **Using the Optimized Prediction System**
 
@@ -370,7 +369,7 @@ config = get_config()
 predictor = DeepfakePredictor(config)
 result = predictor.predict("path/to/media.jpg")
 
-logger.info(f"📊 Prediction result: {result}")
+logger.info(f"Prediction result: {result}")
 ```
 
 ### **Local File Prediction**
@@ -420,13 +419,13 @@ python src/aws/predict_s3_deepfake.py --setup-aws
 ```
 
 **Enhanced S3 Features:**
-- 🔗 Direct S3 URL processing (s3://bucket/file.ext)
-- 🔐 Multiple authentication methods with validation
-- 📱 All media types supported (images, videos, audio)
-- 🧹 Automatic temporary file cleanup with resource management
-- 📊 Detailed S3 file metadata in results
-- 🛡️ Robust error handling and retry mechanisms
-- 📝 Enhanced logging with progress indicators
+- Direct S3 URL processing (s3://bucket/file.ext)
+- Multiple authentication methods with validation
+- All media types supported (images, videos, audio)
+- Automatic temporary file cleanup with resource management
+- Detailed S3 file metadata in results
+- Robust error handling and retry mechanisms
+- Enhanced logging with progress indicators
 
 ### **Batch Prediction with Progress Tracking**
 
@@ -446,7 +445,7 @@ python src/inference/predict_deepfake.py \
     --output predictions.csv
 ```
 
-## 📈 Model Performance
+## Model Performance
 
 The system provides comprehensive evaluation metrics with enhanced visualization:
 
@@ -461,21 +460,21 @@ The system provides comprehensive evaluation metrics with enhanced visualization
 
 ```
 Video Model Performance:
-📊 Accuracy: 85.2%
-📊 Precision: 87.1%
-📊 Recall: 83.3%
-📊 F1-Score: 85.2%
-📊 AUC: 0.91
-⚡ Processing Time: 2.3s avg
-💾 Memory Usage: 512MB peak
+Accuracy: 85.2%
+Precision: 87.1%
+Recall: 83.3%
+F1-Score: 85.2%
+AUC: 0.91
+Processing Time: 2.3s avg
+Memory Usage: 512MB peak
 ```
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 dfd/
 ├── src/
-│   ├── core/                             # 🔧 NEW: Core Architecture
+│   ├── core/                             # NEW: Core Architecture
 │   │   ├── __init__.py                  # Central exports and API
 │   │   ├── config.py                    # Centralized configuration
 │   │   ├── logging_config.py            # Enhanced logging system
@@ -495,7 +494,7 @@ dfd/
 │   ├── models/
 │   │   └── deepfake_detector.py         # Model architectures
 │   ├── utils/
-│   │   ├── optimized_image_pipeline.py  # 🔧 NEW: Optimized image processing
+│   │   ├── optimized_image_pipeline.py  # NEW: Optimized image processing
 │   │   ├── video_pipeline.py            # Video processing
 │   │   ├── audio_pipeline.py            # Audio processing
 │   │   ├── s3_utils.py                  # S3 integration utilities
@@ -505,13 +504,13 @@ dfd/
 ├── data/                                 # Processed dataset
 ├── results/                              # Analysis results
 ├── models/                               # Trained models
-├── logs/                                 # 📝 Enhanced log files
+├── logs/                                 # Enhanced log files
 ├── tests/                                # Comprehensive test suite
 ├── pyproject.toml                        # Project configuration
 └── README.md                             # This file
 ```
 
-## 🧪 Testing
+## Testing
 
 ### **Running the Enhanced Test Suite**
 
@@ -533,8 +532,8 @@ from src.core import get_config, get_logger, setup_logging
 setup_logging(level='INFO')
 config = get_config()
 logger = get_logger('test')
-logger.info('🧪 System test successful!')
-print(f'✅ Configuration loaded: {config.environment}')
+logger.info('System test successful!')
+print(f'Configuration loaded: {config.environment}')
 "
 ```
 
@@ -546,24 +545,23 @@ from src.core.decorators import get_performance_stats
 # After running operations
 stats = get_performance_stats()
 for func_name, metrics in stats.items():
-    print(f"📊 {func_name}: {metrics['avg_time']:.3f}s avg, {metrics['success_rate']:.1%} success")
+    print(f"{func_name}: {metrics['avg_time']:.3f}s avg, {metrics['success_rate']:.1%} success")
 ```
 
-## 📊 Monitoring and Logging
+## Monitoring and Logging
 
 ### **Enhanced Logging Features**
 
 The optimized system provides comprehensive logging with:
 
-- **📝 Emoji Indicators**: Visual status indicators in logs
-- **🎨 Color Coding**: Different colors for different log levels
-- **📁 Automatic Rotation**: Log files with date-based naming
-- **🔇 Library Suppression**: Reduced noise from external libraries
-- **📊 Performance Tracking**: Built-in timing and resource monitoring
+- **Color Coding**: Different colors for different log levels
+- **Automatic Rotation**: Log files with date-based naming
+- **Library Suppression**: Reduced noise from external libraries
+- **Performance Tracking**: Built-in timing and resource monitoring
 
 ### **Log Files and Outputs**
 
-- `logs/deepfake_YYYYMMDD.log`: Main application logs with emoji enhancement
+- `logs/deepfake_YYYYMMDD.log`: Main application logs
 - `models/training_plots/`: Training history visualizations
 - `models/performance_plots/`: Performance analysis charts
 - `models/model_evaluation_results.csv`: Detailed evaluation metrics
@@ -576,42 +574,42 @@ from src.core.base import get_resource_manager
 
 rm = get_resource_manager()
 memory_info = rm.get_memory_usage()
-print(f"💾 Memory usage: {memory_info.get('rss_mb', 0):.1f}MB")
+print(f"Memory usage: {memory_info.get('rss_mb', 0):.1f}MB")
 
 # Automatic cleanup
 cleaned = rm.cleanup_temp_files()
-print(f"🧹 Cleaned {cleaned} temporary files")
+print(f"Cleaned {cleaned} temporary files")
 ```
 
-## 📈 Optimization Benefits
+## Optimization Benefits
 
 ### **Quantified Improvements**
 
-- **📦 Code Reduction**: ~1,150 lines eliminated from duplication
-- **⚡ Performance**: 15-30% faster processing through optimization
-- **🛡️ Reliability**: 95% reduction in configuration-related errors
-- **🔧 Maintainability**: Single point of change for configurations
-- **📊 Monitoring**: Built-in performance tracking across all components
+- **Code Reduction**: ~1,150 lines eliminated from duplication
+- **Performance**: 15-30% faster processing through optimization
+- **Reliability**: 95% reduction in configuration-related errors
+- **Maintainability**: Single point of change for configurations
+- **Monitoring**: Built-in performance tracking across all components
 
 ### **For Developers**
-- 🔧 **Reduced Cognitive Load**: Consistent patterns across codebase
-- 🚀 **Faster Development**: Reusable components and decorators  
-- 🐛 **Easier Debugging**: Structured errors and comprehensive logging
-- 🔄 **Better Testing**: Dependency injection and modular design
+- **Reduced Cognitive Load**: Consistent patterns across codebase
+- **Faster Development**: Reusable components and decorators  
+- **Easier Debugging**: Structured errors and comprehensive logging
+- **Better Testing**: Dependency injection and modular design
 
 ### **For Operations**
-- 📊 **Better Monitoring**: Built-in performance tracking and metrics
-- 🔧 **Easier Configuration**: Environment-aware settings management
-- 🚨 **Improved Reliability**: Standardized error handling and recovery
-- 📈 **Scalability**: Resource management and optimization
+- **Better Monitoring**: Built-in performance tracking and metrics
+- **Easier Configuration**: Environment-aware settings management
+- **Improved Reliability**: Standardized error handling and recovery
+- **Scalability**: Resource management and optimization
 
 ### **For Users**
-- ⚡ **Better Performance**: Optimized processing and resource usage
-- 🛡️ **Higher Reliability**: Robust error handling and validation
-- 📝 **Clear Feedback**: Enhanced logging and progress tracking
-- 🔧 **Easier Configuration**: Simplified setup and deployment
+- **Better Performance**: Optimized processing and resource usage
+- **Higher Reliability**: Robust error handling and validation
+- **Clear Feedback**: Enhanced logging and progress tracking
+- **Easier Configuration**: Simplified setup and deployment
 
-## 🚀 Performance Optimization
+## Performance Optimization
 
 ### **Memory Management**
 
@@ -634,7 +632,7 @@ print(f"🧹 Cleaned {cleaned} temporary files")
 - **Centralized Configuration**: Optimized settings management
 - **Resource Cleanup**: Automatic temporary file management
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feature-name`
@@ -670,18 +668,18 @@ from src.core.decorators import log_execution, validate_file_exists
 from src.core.exceptions import ValidationError, DataError
 ```
 
-## 📝 License
+## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - My GCU colleagues and staff
 - TensorFlow team for the deep learning framework
 - Apple for Metal GPU acceleration support
 - The open-source community for various dependencies
 
-## 📞 Support
+## Support
 
 For questions, issues, or contributions:
 
@@ -690,15 +688,15 @@ For questions, issues, or contributions:
 3. Include system information and error logs
 4. Use the enhanced logging system for better diagnostics
 
-## 🔄 Version History
+## Version History
 
 - **v1.0.0**: Major optimization and modularization release
-  - ✅ Centralized configuration system
-  - ✅ Enhanced logging with emoji indicators
-  - ✅ Structured exception handling
-  - ✅ Base classes and common patterns
-  - ✅ Powerful decorator system
-  - ✅ Performance monitoring and resource management
+  - Centralized configuration system
+  - Enhanced logging
+  - Structured exception handling
+  - Base classes and common patterns
+  - Powerful decorator system
+  - Performance monitoring and resource management
 - **v0.1.0**: Initial release with modular training system
   - Added GPU acceleration support
   - Implemented comprehensive logging
@@ -706,4 +704,4 @@ For questions, issues, or contributions:
 
 ---
 
-**Note**: This system is designed for research and educational purposes. The optimized architecture ensures production-ready reliability and performance. Always verify results and use responsibly.
+**Note**: This system is designed for research and educational purposes. Always verify results and use responsibly.

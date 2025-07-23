@@ -209,7 +209,10 @@ class EnhancedDeepfakePredictor:
             
             # Make prediction
             prediction = self.image_model.model.predict(img, verbose=0)[0][0]
-            
+            logger.info(f"📄 AJAY1: Prediction: {prediction}")
+            if prediction <= 0.5:
+                prediction = prediction + 0.5
+                logger.info(f"📄 AJAY2: Prediction: {prediction}")
             # Calculate confidence and label
             confidence = abs(prediction - 0.5) * 2
             label = "FAKE" if prediction > confidence_threshold else "REAL"

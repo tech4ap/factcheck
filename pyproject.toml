@@ -30,8 +30,7 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = [
     # Core deep learning framework
-    "tensorflow-macos>=2.15.0",
-    "tensorflow-metal>=1.0.0",
+    "tensorflow>=2.15.0",
     "keras>=2.15.0",
     
     # Computer vision and image processing
@@ -133,7 +132,8 @@ Repository = "https://github.com/yourusername/deepfake-detection.git"
 [project.scripts]
 deepfake-train = "src.training.train_deepfake_detector:main"
 deepfake-predict = "src.inference.predict_deepfake:main"
-deepfake-s3-predict = "predict_s3_deepfake:main"
+deepfake-s3-predict = "src.aws.predict_s3_deepfake:main"
+deepfake-sqs-consumer = "src.aws.sqs_deepfake_consumer:main"
 deepfake-video-pipeline = "src.utils.video_pipeline:main"
 deepfake-image-pipeline = "src.utils.image_pipeline:main"
 deepfake-audio-pipeline = "src.utils.audio_pipeline:main"

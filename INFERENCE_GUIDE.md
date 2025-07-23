@@ -1,8 +1,8 @@
-# 🔍 Deepfake Detection Inference Guide
+# Deepfake Detection Inference Guide
 
 This guide explains how to use the enhanced deepfake detection system for both training models and running inference on various media types.
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Create Demo Models (No Training Data Required)
 ```bash
@@ -30,7 +30,7 @@ python src/inference/predict_deepfake.py --list-models
 python example_usage.py
 ```
 
-## 📚 Training Your Own Models
+## Training Your Own Models
 
 ### Data Structure
 Organize your training data as follows:
@@ -62,7 +62,7 @@ python train_and_save_models.py --data-dir /path/to/data --audio-only
 python train_and_save_models.py --data-dir /path/to/data --epochs 50 --batch-size 64
 ```
 
-## 🔍 Inference Options
+## Inference Options
 
 ### Single File Detection
 ```bash
@@ -94,7 +94,7 @@ python src/inference/predict_deepfake.py --input photo.jpg --models-dir /path/to
 python src/inference/predict_deepfake.py --input photo.jpg --no-use-best
 ```
 
-## 📋 Supported File Types
+## Supported File Types
 
 ### Images
 - `.jpg`, `.jpeg`, `.png`, `.bmp`, `.tiff`, `.webp`
@@ -105,7 +105,7 @@ python src/inference/predict_deepfake.py --input photo.jpg --no-use-best
 ### Audio
 - `.wav`, `.mp3`, `.flac`, `.m4a`, `.ogg`, `.aac`
 
-## 📊 Understanding Results
+## Understanding Results
 
 ### Single File Results
 ```python
@@ -127,7 +127,7 @@ python src/inference/predict_deepfake.py --input photo.jpg --no-use-best
 - **Label**: Final classification based on threshold
 - **Threshold**: Decision boundary (default: 0.5)
 
-## 🛠️ Model Management
+## Model Management
 
 ### List Available Models
 ```bash
@@ -149,7 +149,7 @@ models/
     └── ...
 ```
 
-## 🔧 Advanced Usage
+## Advanced Usage
 
 ### Python API Usage
 ```python
@@ -221,7 +221,7 @@ model_path = saver.save_model(
 - Use `--help` flag with any script for options
 - Run `python example_usage.py` for interactive demo
 
-## 📈 Model Performance
+## Model Performance
 
 The models provided are trained for demonstration purposes. For production use:
 
@@ -230,7 +230,7 @@ The models provided are trained for demonstration purposes. For production use:
 3. **Fine-tune Parameters**: Adjust learning rate, batch size, etc.
 4. **Evaluate Thoroughly**: Test on held-out data before deployment
 
-## 🔄 Updates and Maintenance
+## Updates and Maintenance
 
 - Models save metadata automatically for tracking
 - Old checkpoints are cleaned up periodically
@@ -238,5 +238,3 @@ The models provided are trained for demonstration purposes. For production use:
 - Model performance metrics are logged
 
 ---
-
-**Need more help?** Check the main README.md or run the interactive demo with `python example_usage.py`. 

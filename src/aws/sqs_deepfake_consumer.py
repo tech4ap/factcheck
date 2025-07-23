@@ -26,11 +26,16 @@ import json
 import signal
 from pathlib import Path
 
-# Add src to path for imports
-sys.path.append('src')
-
-from src.utils.sqs_consumer import SQSDeepfakeConsumer, create_test_message
-from src.inference.common import setup_logging, add_aws_arguments
+# Handle imports for both direct execution and module execution
+try:
+    # Try relative imports first (when run as module)
+    from ..utils.sqs_consumer import SQSDeepfakeConsumer, create_test_message
+    from ..inference.common import setup_logging, add_aws_arguments
+except ImportError:
+    # Fall back to absolute imports (when run directly)
+    sys.path.append(str(Path(__file__).parent.parent.parent))
+    from src.utils.sqs_consumer import SQSDeepfakeConsumer, create_test_message
+    from src.inference.common import setup_logging, add_aws_arguments
 
 # Configure logging
 setup_logging()

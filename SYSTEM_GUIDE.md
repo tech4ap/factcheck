@@ -1,41 +1,32 @@
-# 🚀 Deepfake Detection System - Comprehensive Guide
+# Deepfake Detection System - Comprehensive Guide
 
 This guide consolidates all documentation for the enhanced deepfake detection system, including modular architecture, performance improvements, evaluation metrics, and usage instructions.
 
-## 📋 Table of Contents
+## Table of Contents
 
-1. [System Overview](#-system-overview)
-2. [Modular Architecture](#-modular-architecture)
-3. [Performance Improvements](#-performance-improvements)
-4. [Evaluation Metrics](#-evaluation-metrics)
-5. [Usage Guide](#-usage-guide)
-6. [Troubleshooting](#-troubleshooting)
+1. [System Overview](#system-overview)
+2. [Modular Architecture](#modular-architecture)
+3. [Performance Improvements](#performance-improvements)
+4. [Evaluation Metrics](#evaluation-metrics)
+5. [Usage Guide](#usage-guide)
+6. [Troubleshooting](#troubleshooting)
 
-## 📊 System Overview
+## System Overview
 
 The deepfake detection system features comprehensive optimization and modularization:
 
-- **🏗️ Modular Architecture**: Clean separation of concerns with focused modules
-- **⚡ Enhanced Performance**: 25-40% accuracy improvements through better architectures
-- **📈 Comprehensive Evaluation**: 20+ evaluation metrics with advanced visualizations
-- **🔧 Optimized Training**: Enhanced strategies with better hyperparameters
-- **📝 Code Quality**: Eliminated ~1,350 lines of duplicate code
+- **Modular Architecture**: Clean separation of concerns with focused modules
+- **Comprehensive Evaluation**: 20+ evaluation metrics with advanced visualizations
+- **Optimized Training**: Enhanced strategies with better hyperparameters
 
-### **Key Achievements**
 
-- **📦 Code Reduction**: Eliminated duplication across prediction scripts
-- **⚡ Performance**: Models improved from ~50% to 70-90% accuracy
-- **🛡️ Reliability**: Enhanced error handling and structured exceptions
-- **🔧 Maintainability**: Centralized configuration and logging
-- **📊 Monitoring**: Built-in performance tracking and resource management
-
-## 🏗️ Modular Architecture
+## Modular Architecture
 
 ### **Enhanced Structure**
 
 ```
 src/
-├── core/                     # 🔧 Core Architecture
+├── core/                     # Core Architecture
 │   ├── config.py            # Centralized configuration
 │   ├── logging_config.py    # Enhanced logging system
 │   ├── exceptions.py        # Structured exception handling
@@ -49,71 +40,52 @@ src/
 │   ├── evaluation.py       # Model evaluation and metrics
 │   └── visualization.py    # Plotting and visualization
 ├── inference/               # Prediction interface
-│   ├── common.py           # 🆕 Shared utilities (428 lines)
+│   ├── common.py           # Shared utilities (428 lines)
 │   └── predict_deepfake.py # Enhanced prediction script
 └── utils/                   # Processing pipelines
 ```
 
-### **Code Consolidation Results**
 
-#### **Shared Module (`src/inference/common.py`)**
-
-**Key Functions:**
-- `setup_logging()` - Standardized logging configuration
-- `create_predictor_from_args()` - Enhanced predictor creation
-- `validate_and_load_models()` - Robust model loading
-- `save_prediction_result()` - Unified result saving
-- `validate_s3_url_and_credentials()` - S3 validation
-- `handle_prediction_error()` - Contextual error messages
-- `PredictionContext` - Automatic cleanup management
-
-**Elimination Results:**
-- **predict_deepfake.py**: 659 → 585 lines (-11%)
-- **predict_s3_deepfake.py**: 216 → 176 lines (-18%)
-- **~200 lines eliminated** from duplication
-- **Enhanced error handling** with contextual messages
-- **Improved user experience** with better guidance
-
-## ⚡ Performance Improvements
+## Performance Improvements
 
 ### **Enhanced Model Architectures**
 
 #### **Image Model Enhancements**
-- ✅ **Residual Connections**: Skip connections for better gradient flow
-- ✅ **Batch Normalization**: Stable training after each layer
-- ✅ **L2 Regularization**: Prevents overfitting (λ=0.01)
-- ✅ **Deeper Architecture**: Dense layers (1024→512→256→128→1)
-- ✅ **Optimized Dropout**: Reduced from 0.5 to 0.3
-- ✅ **Enhanced Optimizer**: Improved Adam parameters
+- **Residual Connections**: Skip connections for better gradient flow
+- **Batch Normalization**: Stable training after each layer
+- **L2 Regularization**: Prevents overfitting (λ=0.01)
+- **Deeper Architecture**: Dense layers (1024→512→256→128→1)
+- **Optimized Dropout**: Reduced from 0.5 to 0.3
+- **Enhanced Optimizer**: Improved Adam parameters
 
 #### **Video Model Enhancements**
-- ✅ **Bidirectional LSTM**: Better temporal modeling
-- ✅ **Attention Mechanism**: Focus on important frames
-- ✅ **Enhanced CNN**: Deeper extraction (64→128→256→512 channels)
-- ✅ **Temporal Processing**: Better sequence modeling
-- ✅ **Residual Connections**: Added in CNN layers
-- ✅ **Recurrent Dropout**: Added to LSTM layers (0.3)
+- **Bidirectional LSTM**: Better temporal modeling
+- **Attention Mechanism**: Focus on important frames
+- **Enhanced CNN**: Deeper extraction (64→128→256→512 channels)
+- **Temporal Processing**: Better sequence modeling
+- **Residual Connections**: Added in CNN layers
+- **Recurrent Dropout**: Added to LSTM layers (0.3)
 
 #### **Audio Model Enhancements**
-- ✅ **Residual Blocks**: 3 blocks for better feature learning
-- ✅ **Enhanced CNN**: Deeper architecture with skip connections
-- ✅ **Better Feature Extraction**: Improved spectrogram processing
-- ✅ **Regularization**: L2 regularization and batch normalization
-- ✅ **Deeper Dense Layers**: Increased capacity
+- **Residual Blocks**: 3 blocks for better feature learning
+- **Enhanced CNN**: Deeper architecture with skip connections
+- **Better Feature Extraction**: Improved spectrogram processing
+- **Regularization**: L2 regularization and batch normalization
+- **Deeper Dense Layers**: Increased capacity
 
 ### **Training Strategy Improvements**
 
 #### **Enhanced Hyperparameters**
-- ✅ **Epochs**: Increased from 50 to 100 for better convergence
-- ✅ **Learning Rate**: Optimized Adam parameters
-- ✅ **Batch Size**: Optimized per model (Images: 32, Videos: 8, Audio: 32)
-- ✅ **Class Weights**: Balanced weights for imbalanced data
+- **Epochs**: Increased from 50 to 100 for better convergence
+- **Learning Rate**: Optimized Adam parameters
+- **Batch Size**: Optimized per model (Images: 32, Videos: 8, Audio: 32)
+- **Class Weights**: Balanced weights for imbalanced data
 
 #### **Advanced Callbacks**
-- ✅ **Enhanced Early Stopping**: Increased patience to 15 epochs
-- ✅ **Learning Rate Scheduling**: ReduceLROnPlateau with factor 0.5
-- ✅ **Model Checkpointing**: Save best model on validation accuracy
-- ✅ **TensorBoard Logging**: Comprehensive training monitoring
+- **Enhanced Early Stopping**: Increased patience to 15 epochs
+- **Learning Rate Scheduling**: ReduceLROnPlateau with factor 0.5
+- **Model Checkpointing**: Save best model on validation accuracy
+- **TensorBoard Logging**: Comprehensive training monitoring
 
 ### **Performance Targets**
 
@@ -123,7 +95,7 @@ src/
 | **Video** | ~49.5% | **80-90%** | +30-40% |
 | **Audio** | ~50% | **70-80%** | +20-30% |
 
-## 📈 Evaluation Metrics
+## Evaluation Metrics
 
 ### **Comprehensive Metrics Suite (20+ Metrics)**
 
@@ -152,10 +124,10 @@ src/
 6. **Performance Summary**: Overall comparison with recommendations
 
 #### **Performance Assessment**
-- **🏆 Excellent**: Accuracy ≥ 90%, AUC ≥ 0.9
-- **✅ Good**: Accuracy ≥ 80%, AUC ≥ 0.8
-- **⚠️ Fair**: Accuracy ≥ 70%, AUC ≥ 0.7
-- **❌ Poor**: Accuracy < 70%, AUC < 0.7
+- **Excellent**: Accuracy ≥ 90%, AUC ≥ 0.9
+- **Good**: Accuracy ≥ 80%, AUC ≥ 0.8
+- **Fair**: Accuracy ≥ 70%, AUC ≥ 0.7
+- **Poor**: Accuracy < 70%, AUC < 0.7
 
 ### **Automated Recommendations**
 
@@ -182,7 +154,7 @@ models/
     └── [model]_training_history.png
 ```
 
-## 📚 Usage Guide
+## Usage Guide
 
 ### **1. Enhanced Training**
 
@@ -300,9 +272,9 @@ from src.core import get_logger
 logger = get_logger(__name__)
 
 # Enhanced logging with emojis
-logger.info("🚀 Starting training process")
-logger.warning("⚠️ GPU memory usage high")
-logger.error("❌ Training failed")
+logger.info("Starting training process")
+logger.warning("GPU memory usage high")
+logger.error("Training failed")
 ```
 
 #### **Performance Monitoring**
@@ -341,8 +313,8 @@ from src.core import get_config, get_logger, setup_logging
 setup_logging(level='INFO')
 config = get_config()
 logger = get_logger('test')
-logger.info('🧪 System test successful!')
-print(f'✅ Configuration loaded: {config.environment}')
+logger.info('System test successful!')
+print(f'Configuration loaded: {config.environment}')
 "
 ```
 
@@ -401,7 +373,7 @@ ls -la models/
 python -c "
 import tensorflow as tf
 model = tf.keras.models.load_model('models/image_model_final.h5')
-print('✅ Model loaded successfully')
+print('Model loaded successfully')
 "
 ```
 
@@ -430,7 +402,7 @@ export PYTHONPATH="${PYTHONPATH}:$(pwd)/src"
 python -m src.training.main
 
 # Test imports
-python -c "import src.core; print('✅ Core module imported')"
+python -c "import src.core; print('Core module imported')"
 ```
 
 ### **Performance Debugging**
@@ -473,7 +445,7 @@ for func, metrics in stats.items():
 4. **Model Validation**: Verify performance before deployment
 5. **Error Recovery**: Implement robust error handling
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 ### **Planned Improvements**
 
