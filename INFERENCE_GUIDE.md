@@ -7,7 +7,7 @@ This guide explains how to use the enhanced deepfake detection system for both t
 ### 1. Create Demo Models (No Training Data Required)
 ```bash
 # Create sample models for testing
-python train_and_save_models.py --demo
+python src/training/train_and_save_models.py --demo
 ```
 
 ### 2. Run Inference on Your Files
@@ -51,15 +51,15 @@ your_data/
 ### Training Commands
 ```bash
 # Train all models (image, video, audio)
-python train_and_save_models.py --data-dir /path/to/your/data
+python src/training/train_and_save_models.py --data-dir /path/to/your/data
 
 # Train specific model types
-python train_and_save_models.py --data-dir /path/to/data --image-only
-python train_and_save_models.py --data-dir /path/to/data --video-only
-python train_and_save_models.py --data-dir /path/to/data --audio-only
+python src/training/train_and_save_models.py --data-dir /path/to/data --image-only
+python src/training/train_and_save_models.py --data-dir /path/to/data --video-only
+python src/training/train_and_save_models.py --data-dir /path/to/data --audio-only
 
 # Custom training parameters
-python train_and_save_models.py --data-dir /path/to/data --epochs 50 --batch-size 64
+python src/training/train_and_save_models.py --data-dir /path/to/data --epochs 50 --batch-size 64
 ```
 
 ## Inference Options
@@ -204,7 +204,7 @@ model_path = saver.save_model(
 ### Common Issues
 
 **"No models loaded successfully"**
-- Run `python train_and_save_models.py --demo` to create sample models
+- Run `python src/training/train_and_save_models.py --demo` to create sample models
 - Check if models directory exists and contains .h5 files
 
 **"Could not load image/video/audio"**

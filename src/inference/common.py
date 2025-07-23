@@ -112,7 +112,7 @@ def validate_and_load_models(predictor: 'EnhancedDeepfakePredictor',
     if not any(loaded_models.values()):
         raise RuntimeError(
             "No models could be loaded! Make sure you have trained models in the models directory. "
-            "You can train models using: python train_and_save_models.py --demo"
+                            "You can train models using: python src/training/train_and_save_models.py --demo"
         )
     
     loaded_model_names = [k for k, v in loaded_models.items() if v]
@@ -231,7 +231,7 @@ def list_available_models(predictor: 'EnhancedDeepfakePredictor') -> None:
     
     if not models:
         print("No models found!")
-        print("Train models using: python train_and_save_models.py --demo")
+        print("Train models using: python src/training/train_and_save_models.py --demo")
         return
     
     for model_type, metadata in models.items():
@@ -252,8 +252,7 @@ def list_available_models(predictor: 'EnhancedDeepfakePredictor') -> None:
         print()
 
 def validate_s3_url_and_credentials(sqs_to_ml_url: str, 
-def validate_s3_url_and_credentials(sqs_to_ml_url: str, 
-                                   aws_access_key_id: Optional[str] = None) -> None:
+                                    aws_access_key_id: Optional[str] = None) -> None:
     """
     Validate S3 URL format and check for AWS credentials.
     
@@ -275,7 +274,6 @@ def validate_s3_url_and_credentials(sqs_to_ml_url: str,
         sys.path.append(str(src_path))
         from utils.s3_utils import is_s3_url
     
-    if not is_s3_url(sqs_to_ml_url):
     if not is_s3_url(sqs_to_ml_url):
         raise ValueError(
             f"Invalid S3 URL: {sqs_to_ml_url}\n"
@@ -303,18 +301,16 @@ def cleanup_temporary_file(file_path: Optional[str]) -> None:
             logger.warning(f"Could not cleanup temporary file: {e}")
 
 def get_s3_file_info(sqs_to_ml_url: str, 
-def get_s3_file_info(sqs_to_ml_url: str, 
                     aws_access_key_id: Optional[str] = None,
                     aws_secret_access_key: Optional[str] = None,
                     aws_session_token: Optional[str] = None,
                     aws_region: str = 'us-east-1') -> Optional[Dict[str, Any]]:
     """
     Get S3 file information safely with error handling.
-    
-    Args:
-        sqs_to_ml_url: S3 URL of the file
-        sqs_to_ml_url: S3 URL of the file
-        aws_access_key_id: AWS access key ID
+          
+      Args:
+          sqs_to_ml_url: S3 URL of the file
+          aws_access_key_id: AWS access key ID
         aws_secret_access_key: AWS secret access key
         aws_session_token: AWS session token
         aws_region: AWS region
@@ -367,7 +363,7 @@ def handle_prediction_error(error: Exception, context: str = "prediction") -> No
         logger.info("Check your AWS credentials and try again")
     elif "No models could be loaded" in error_msg:
         logger.error("No trained models found")
-        logger.info("Train models using: python train_and_save_models.py --demo")
+        logger.info("Train models using: python src/training/train_and_save_models.py --demo")
     elif "File not found" in error_msg:
         logger.error(f"File not found: {error_msg}")
         logger.info("Check the file path and try again")

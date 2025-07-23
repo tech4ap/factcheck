@@ -825,62 +825,213 @@ class ModelTrainer:
         
         return img
     
-    def _create_enhanced_callbacks(self, model_name: str, learning_rate: float) -> list:
+    def _create_advanced_data_augmentation(self) -> ImageDataGenerator:
+        """Create advanced data augmentation for maximum generalization."""
+        return ImageDataGenerator(
+            rotation_range=40,
+            width_shift_range=0.3,
+            height_shift_range=0.3,
+            shear_range=0.3,
+            zoom_range=0.3,
+            horizontal_flip=True,
+            vertical_flip=False,
+            brightness_range=[0.7, 1.3],
+            channel_shift_range=0.2,
+            fill_mode='reflect',  # Better than 'nearest' for deepfakes
+            preprocessing_function=self._advanced_preprocessing_function
+        )
+    
+    def _advanced_preprocessing_function(self, img):
+        """Advanced preprocessing function with multiple augmentation techniques."""
+        # Convert to numpy if tensor
+        if hasattr(img, 'numpy'):
+            img = img.numpy()
+        
+        # Ensure correct data type and range
+        if img.max() <= 1.0:
+            img = img * 255.0
+        img = img.astype(np.uint8)
+        
+        # Random gaussian noise (helps with generalization)
+        if np.random.random() < 0.3:
+            noise = np.random.normal(0, np.random.uniform(1, 5), img.shape)
+            img = np.clip(img + noise, 0, 255).astype(np.uint8)
+        
+        # Random blur (simulates compression artifacts)
+        if np.random.random() < 0.2:
+            kernel_size = np.random.choice([3, 5])
+            img = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
+        
+        # Random JPEG compression simulation
+        if np.random.random() < 0.2:
+            quality = np.random.randint(70, 95)
+            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
+            _, img_encoded = cv2.imencode('.jpg', img, encode_param)
+            img = cv2.imdecode(img_encoded, cv2.IMREAD_COLOR)
+        
+        # Random saturation adjustment
+        if np.random.random() < 0.3:
+            hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV).astype(np.float32)
+            saturation_factor = np.random.uniform(0.7, 1.3)
+            hsv[:, :, 1] = np.clip(hsv[:, :, 1] * saturation_factor, 0, 255)
+            img = cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2RGB)
+        
+        # Convert back to float32 and normalize
+        img = img.astype(np.float32) / 255.0
+        
+        # Random contrast adjustment
+        if np.random.random() < 0.3:
+            factor = np.random.uniform(0.8, 1.2)
+            img = np.clip(img * factor, 0, 1)
+        
+        return img
+    
+    def _mixup_generator(self, generator, alpha=0.2):
+        """Create mixup augmentation generator."""
+        while True:
+            batch_x, batch_y = next(generator)
+            batch_size = batch_x.shape[0]
+            
+            # Generate mixup coefficients
+            lambda_vals = np.random.beta(alpha, alpha, batch_size)
+            
+            # Shuffle indices for mixing
+            indices = np.random.permutation(batch_size)
+            
+            # Apply mixup
+            mixed_x = np.zeros_like(batch_x)
+            mixed_y = np.zeros_like(batch_y)
+            
+            for i in range(batch_size):
+                lam = lambda_vals[i]
+                mixed_x[i] = lam * batch_x[i] + (1 - lam) * batch_x[indices[i]]
+                mixed_y[i] = lam * batch_y[i] + (1 - lam) * batch_y[indices[i]]
+            
+            yield mixed_x, mixed_y
+    
+    def _cutmix_generator(self, generator, alpha=1.0):
+        """Create cutmix augmentation generator."""
+        while True:
+            batch_x, batch_y = next(generator)
+            batch_size = batch_x.shape[0]
+            
+            for i in range(batch_size):
+                if np.random.random() < 0.5:  # Apply cutmix with 50% probability
+                    # Generate random box
+                    lam = np.random.beta(alpha, alpha)
+                    H, W = batch_x.shape[1], batch_x.shape[2]
+                    
+                    cut_ratio = np.sqrt(1 - lam)
+                    cut_w = int(W * cut_ratio)
+                    cut_h = int(H * cut_ratio)
+                    
+                    cx = np.random.randint(W)
+                    cy = np.random.randint(H)
+                    
+                    bbx1 = np.clip(cx - cut_w // 2, 0, W)
+                    bby1 = np.clip(cy - cut_h // 2, 0, H)
+                    bbx2 = np.clip(cx + cut_w // 2, 0, W)
+                    bby2 = np.clip(cy + cut_h // 2, 0, H)
+                    
+                    # Select random image to mix with
+                    rand_index = np.random.randint(batch_size)
+                    
+                    # Apply cutmix
+                    batch_x[i, bby1:bby2, bbx1:bbx2, :] = batch_x[rand_index, bby1:bby2, bbx1:bbx2, :]
+                    
+                    # Adjust labels
+                    lam = 1 - ((bbx2 - bbx1) * (bby2 - bby1) / (H * W))
+                    batch_y[i] = lam * batch_y[i] + (1 - lam) * batch_y[rand_index]
+            
+            yield batch_x, batch_y
+    
+    def _create_enhanced_callbacks(self, model_name: str, learning_rate: float, patience: int = 20):
         """Create enhanced callbacks for better training."""
-        callbacks_list = []
-        
-        # Enhanced early stopping
-        early_stopping = tf.keras.callbacks.EarlyStopping(
-            monitor='val_loss',
-            patience=15,
-            restore_best_weights=True,
-            verbose=1
-        )
-        callbacks_list.append(early_stopping)
-        
-        # Enhanced learning rate scheduling
-        lr_scheduler = tf.keras.callbacks.ReduceLROnPlateau(
-            monitor='val_loss',
-            factor=0.5,
-            patience=8,
-            min_lr=learning_rate / 1000,
-            verbose=1
-        )
-        callbacks_list.append(lr_scheduler)
-        
-        # Model checkpointing
-        checkpoint = tf.keras.callbacks.ModelCheckpoint(
-            filepath=str(self.output_dir / f"{model_name}_best.h5"),
-            monitor='val_accuracy',
-            save_best_only=True,
-            save_weights_only=False,
-            verbose=1
-        )
-        callbacks_list.append(checkpoint)
-        
-        # TensorBoard logging
-        tensorboard_dir = self.output_dir / "logs" / model_name
-        tensorboard_dir.mkdir(parents=True, exist_ok=True)
-        tensorboard = tf.keras.callbacks.TensorBoard(
-            log_dir=str(tensorboard_dir),
-            histogram_freq=1,
-            write_graph=True,
-            write_images=True
-        )
-        callbacks_list.append(tensorboard)
-        
-        # Custom callback for training monitoring
-        class TrainingMonitor(tf.keras.callbacks.Callback):
-            def on_epoch_end(self, epoch, logs=None):
-                if epoch % 10 == 0:
-                    logger.info(f"Epoch {epoch}: loss={logs['loss']:.4f}, "
-                              f"accuracy={logs['accuracy']:.4f}, "
-                              f"val_loss={logs['val_loss']:.4f}, "
-                              f"val_accuracy={logs['val_accuracy']:.4f}")
-        
-        callbacks_list.append(TrainingMonitor())
+        callbacks_list = [
+            # Enhanced early stopping based on validation AUC
+            tf.keras.callbacks.EarlyStopping(
+                monitor='val_auc',
+                patience=patience,
+                restore_best_weights=True,
+                mode='max',
+                verbose=1,
+                min_delta=0.001
+            ),
+            
+            # Advanced learning rate scheduling
+            tf.keras.callbacks.ReduceLROnPlateau(
+                monitor='val_auc',
+                factor=0.3,
+                patience=patience // 3,
+                min_lr=learning_rate / 1000,
+                mode='max',
+                verbose=1,
+                cooldown=5
+            ),
+            
+            # Model checkpointing with multiple criteria
+            tf.keras.callbacks.ModelCheckpoint(
+                filepath=f'{self.output_dir}/{model_name}_best_auc.h5',
+                monitor='val_auc',
+                save_best_only=True,
+                mode='max',
+                verbose=1,
+                save_weights_only=False
+            ),
+            
+            tf.keras.callbacks.ModelCheckpoint(
+                filepath=f'{self.output_dir}/{model_name}_best_loss.h5',
+                monitor='val_loss',
+                save_best_only=True,
+                mode='min',
+                verbose=1,
+                save_weights_only=False
+            ),
+            
+            # Cosine annealing with warm restarts
+            tf.keras.callbacks.LearningRateScheduler(
+                lambda epoch: self._cosine_annealing_with_warmup(epoch, learning_rate),
+                verbose=0
+            ),
+            
+            # Advanced logging
+            tf.keras.callbacks.CSVLogger(
+                f'{self.output_dir}/{model_name}_training_log.csv',
+                append=True
+            ),
+            
+            # Gradient accumulation simulation through batch size adjustment
+            tf.keras.callbacks.LambdaCallback(
+                on_epoch_end=lambda epoch, logs: self._log_advanced_metrics(epoch, logs, model_name)
+            )
+        ]
         
         return callbacks_list
+    
+    def _cosine_annealing_with_warmup(self, epoch, initial_lr, warmup_epochs=5, total_epochs=100):
+        """Cosine annealing learning rate schedule with warmup."""
+        if epoch < warmup_epochs:
+            # Linear warmup
+            return initial_lr * (epoch + 1) / warmup_epochs
+        else:
+            # Cosine annealing
+            progress = (epoch - warmup_epochs) / (total_epochs - warmup_epochs)
+            return initial_lr * 0.5 * (1 + np.cos(np.pi * progress))
+    
+    def _log_advanced_metrics(self, epoch, logs, model_name):
+        """Log advanced metrics for better monitoring."""
+        if logs:
+            # Calculate F1 score from precision and recall
+            precision = logs.get('val_precision', 0)
+            recall = logs.get('val_recall', 0)
+            if precision + recall > 0:
+                f1_score = 2 * (precision * recall) / (precision + recall)
+                logger.info(f"Epoch {epoch + 1} - F1 Score: {f1_score:.4f}")
+            
+            # Log AUC and other important metrics
+            val_auc = logs.get('val_auc', 0)
+            val_pr_auc = logs.get('val_pr_auc', 0)
+            logger.info(f"Epoch {epoch + 1} - Val AUC: {val_auc:.4f}, Val PR-AUC: {val_pr_auc:.4f}")
     
     def _save_training_history(self, history: tf.keras.callbacks.History, 
                               model_name: str, training_time: float = None) -> None:
@@ -985,6 +1136,195 @@ class ModelTrainer:
         except Exception as e:
             logger.error(f"Error during enhanced image model training: {e}")
             return None
+    
+    def train_enhanced_image_model(self, epochs: int = 100, batch_size: int = 32, 
+                                 fine_tune: bool = True, learning_rate: float = 1e-4,
+                                 use_advanced_augmentation: bool = True,
+                                 use_mixup: bool = True, use_cutmix: bool = True,
+                                 base_model: str = 'efficientnet',
+                                 use_multiscale: bool = True,
+                                 use_attention: bool = True) -> Optional[ImageDeepfakeDetector]:
+        """
+        Train the enhanced image deepfake detection model with advanced techniques.
+        
+        Args:
+            epochs (int): Number of training epochs
+            batch_size (int): Training batch size
+            fine_tune (bool): Whether to perform fine-tuning
+            learning_rate (float): Initial learning rate
+            use_advanced_augmentation (bool): Use advanced data augmentation
+            use_mixup (bool): Use mixup augmentation
+            use_cutmix (bool): Use cutmix augmentation
+            base_model (str): Base model architecture
+            use_multiscale (bool): Use multi-scale feature extraction
+            use_attention (bool): Use attention mechanisms
+            
+        Returns:
+            Optional[ImageDeepfakeDetector]: Trained model or None if training failed
+        """
+        logger.info("Starting enhanced image model training with advanced techniques...")
+        start_time = time.time()
+        
+        try:
+            # Load data
+            logger.info("Loading image data...")
+            train_images, train_labels = self.data_loader.load_image_data_from_directories('train')
+            val_images, val_labels = self.data_loader.load_image_data_from_directories('validation')
+            
+            if len(train_images) == 0:
+                logger.error("No training data found for images")
+                return None
+            
+            logger.info(f"Loaded {len(train_images)} training images, {len(val_images)} validation images")
+            
+            # Calculate class weights for imbalanced data
+            from sklearn.utils.class_weight import compute_class_weight
+            class_weights = compute_class_weight(
+                'balanced',
+                classes=np.unique(train_labels),
+                y=train_labels
+            )
+            class_weight_dict = {i: class_weights[i] for i in range(len(class_weights))}
+            logger.info(f"Calculated class weights: {class_weight_dict}")
+            
+            # Create enhanced model
+            logger.info(f"Building enhanced image model with {base_model}...")
+            image_model = ImageDeepfakeDetector(
+                base_model=base_model,
+                use_attention=use_attention,
+                use_multiscale=use_multiscale
+            )
+            model = image_model.build_model(
+                learning_rate=learning_rate,
+                use_focal_loss=True,
+                focal_alpha=0.25,
+                focal_gamma=2.0
+            )
+            
+            # Print model summary
+            logger.info("Model architecture summary:")
+            model.summary(print_fn=logger.info)
+            summary_info = image_model.get_model_summary()
+            logger.info(f"Model details: {summary_info}")
+            
+            # Create data generators with advanced augmentation
+            if use_advanced_augmentation:
+                train_datagen = self._create_advanced_data_augmentation()
+            else:
+                train_datagen = self._create_enhanced_data_augmentation()
+            
+            val_datagen = ImageDataGenerator()  # No augmentation for validation
+            
+            # Create data generators
+            train_generator = train_datagen.flow(
+                train_images, train_labels, 
+                batch_size=batch_size,
+                shuffle=True
+            )
+            
+            val_generator = val_datagen.flow(
+                val_images, val_labels,
+                batch_size=batch_size,
+                shuffle=False
+            )
+            
+            # Apply advanced augmentation techniques
+            if use_mixup:
+                logger.info("Applying MixUp augmentation...")
+                train_generator = self._mixup_generator(train_generator, alpha=0.2)
+            
+            if use_cutmix:
+                logger.info("Applying CutMix augmentation...")
+                train_generator = self._cutmix_generator(train_generator, alpha=1.0)
+            
+            # Enhanced callbacks
+            callbacks = self._create_enhanced_callbacks("enhanced_image_model", learning_rate)
+            
+            # Calculate steps per epoch
+            steps_per_epoch = max(1, len(train_images) // batch_size)
+            validation_steps = max(1, len(val_images) // batch_size)
+            
+            # Initial training phase
+            logger.info("Starting initial training phase...")
+            history = model.fit(
+                train_generator,
+                steps_per_epoch=steps_per_epoch,
+                epochs=epochs,
+                validation_data=val_generator,
+                validation_steps=validation_steps,
+                callbacks=callbacks,
+                verbose=1,
+                class_weight=class_weight_dict,
+                workers=4,
+                use_multiprocessing=True,
+                max_queue_size=10
+            )
+            
+            # Enhanced fine-tuning phase
+            if fine_tune:
+                logger.info("Starting enhanced fine-tuning phase...")
+                image_model.fine_tune(learning_rate=learning_rate/10, unfreeze_layers=-50)
+                
+                # Create new callbacks for fine-tuning
+                fine_tune_callbacks = self._create_enhanced_callbacks(
+                    "enhanced_image_model_finetune", 
+                    learning_rate/10,
+                    patience=15
+                )
+                
+                # Fine-tuning with reduced epochs and learning rate
+                fine_tune_history = model.fit(
+                    train_generator,
+                    steps_per_epoch=steps_per_epoch,
+                    epochs=epochs // 2,
+                    validation_data=val_generator,
+                    validation_steps=validation_steps,
+                    callbacks=fine_tune_callbacks,
+                    verbose=1,
+                    class_weight=class_weight_dict,
+                    workers=4,
+                    use_multiprocessing=True,
+                    max_queue_size=10
+                )
+                
+                # Combine training histories
+                for key in history.history:
+                    if key in fine_tune_history.history:
+                        history.history[key].extend(fine_tune_history.history[key])
+            
+            # Save final model
+            final_model_path = self.output_dir / "enhanced_image_model_final.h5"
+            model.save(final_model_path)
+            logger.info(f"Saved final model to {final_model_path}")
+            
+            # Save training history and create visualizations
+            training_time = time.time() - start_time
+            self._save_training_history(history, "enhanced_image_model", training_time)
+            
+            # Log final performance
+            final_metrics = {
+                'val_auc': max(history.history.get('val_auc', [0])),
+                'val_accuracy': max(history.history.get('val_accuracy', [0])),
+                'val_precision': max(history.history.get('val_precision', [0])),
+                'val_recall': max(history.history.get('val_recall', [0])),
+                'training_time_minutes': training_time / 60
+            }
+            
+            logger.info("Enhanced image model training completed!")
+            logger.info(f"Final performance metrics: {final_metrics}")
+            
+            return image_model
+            
+        except Exception as e:
+            logger.error(f"Error during enhanced image model training: {e}")
+            import traceback
+            logger.error(f"Full traceback: {traceback.format_exc()}")
+            return None
+        
+        finally:
+            # Cleanup
+            tf.keras.backend.clear_session()
+            gc.collect()
     
     def train_video_model(self, epochs: int = 100, batch_size: int = 8, 
                          frames_per_video: int = 10, learning_rate: float = 1e-4) -> Optional[VideoDeepfakeDetector]:

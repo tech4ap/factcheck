@@ -35,7 +35,6 @@ class SQSDeepfakeConsumer:
     Expected message format:
     {
         "sqs_to_ml_url": "s3://bucket/path/to/file.ext",
-        "sqs_to_ml_url": "s3://bucket/path/to/file.ext",
         "callback_url": "https://api.example.com/callback",  # optional
         "request_id": "unique-request-id",  # optional
         "metadata": {  # optional
@@ -56,13 +55,10 @@ class SQSDeepfakeConsumer:
                  visibility_timeout: int = 30,
                  poll_interval: int = 5,
                  result_queue_url: Optional[str] = None):
-                 poll_interval: int = 5,
-                 result_queue_url: Optional[str] = None):
         """
         Initialize SQS consumer.
         
         Args:
-            queue_url: AWS SQS queue URL for receiving messages
             queue_url: AWS SQS queue URL for receiving messages
             aws_region: AWS region
             aws_access_key_id: AWS access key ID (optional, uses env vars if not provided)
@@ -73,10 +69,8 @@ class SQSDeepfakeConsumer:
             visibility_timeout: Message visibility timeout
             poll_interval: Polling interval in seconds
             result_queue_url: Optional SQS queue URL for sending results
-            result_queue_url: Optional SQS queue URL for sending results
         """
         self.queue_url = queue_url
-        self.result_queue_url = result_queue_url
         self.result_queue_url = result_queue_url
         self.aws_region = aws_region
         self.models_dir = models_dir
@@ -99,8 +93,6 @@ class SQSDeepfakeConsumer:
         self.stats = {
             'messages_processed': 0,
             'messages_failed': 0,
-            'results_sent': 0,
-            'callbacks_sent': 0,
             'results_sent': 0,
             'callbacks_sent': 0,
             'start_time': None
@@ -186,12 +178,8 @@ class SQSDeepfakeConsumer:
             # Validate required fields
             if 'sqs_to_ml_url' not in message_data:
                 raise ValueError("Message missing required field 'sqs_to_ml_url'")
-            if 'sqs_to_ml_url' not in message_data:
-                raise ValueError("Message missing required field 'sqs_to_ml_url'")
             
             # Validate S3 URL format
-            sqs_to_ml_url = message_data['sqs_to_ml_url']
-            validate_s3_url_and_credentials(sqs_to_ml_url, self.aws_access_key_id)
             sqs_to_ml_url = message_data['sqs_to_ml_url']
             validate_s3_url_and_credentials(sqs_to_ml_url, self.aws_access_key_id)
             
@@ -213,7 +201,6 @@ class SQSDeepfakeConsumer:
             Processing result dictionary
         """
         sqs_to_ml_url = message_data['sqs_to_ml_url']
-        sqs_to_ml_url = message_data['sqs_to_ml_url']
         request_id = message_data.get('request_id', f"req_{int(time.time())}")
         
         logger.info(f"Processing deepfake detection for: {sqs_to_ml_url} (ID: {request_id})")
@@ -223,7 +210,6 @@ class SQSDeepfakeConsumer:
             
             # Run prediction with context management for cleanup
             with PredictionContext(predictor, cleanup_files=True) as ctx:
-                result = ctx.predict(sqs_to_ml_url, confidence_threshold=0.5)
                 result = ctx.predict(sqs_to_ml_url, confidence_threshold=0.5)
                 
                 # Enhance result with message metadata
@@ -245,7 +231,6 @@ class SQSDeepfakeConsumer:
             # Return error result
             return {
                 'request_id': request_id,
-                'sqs_to_ml_url': sqs_to_ml_url,
                 'sqs_to_ml_url': sqs_to_ml_url,
                 'error': str(e),
                 'processed_at': datetime.utcnow().isoformat(),
@@ -329,7 +314,6 @@ class SQSDeepfakeConsumer:
                 MaxNumberOfMessages=self.max_messages,
                 WaitTimeSeconds=self.wait_time_seconds,
                 VisibilityTimeout=self.visibility_timeout
-                VisibilityTimeout=self.visibility_timeout
             )
             
             messages = response.get('Messages', [])
@@ -358,10 +342,6 @@ class SQSDeepfakeConsumer:
             
             # Process deepfake detection
             result = self.process_message(message_data)
-            
-            # Send result to result queue if configured
-            if self.result_queue_url:
-                self.send_result_to_queue(result)
             
             # Send result to result queue if configured
             if self.result_queue_url:
@@ -412,7 +392,6 @@ class SQSDeepfakeConsumer:
                 
                 # Print stats periodically
                 if self.stats['messages_processed'] % 100 == 0 and self.stats['messages_processed'] > 0:
-                if self.stats['messages_processed'] % 100 == 0 and self.stats['messages_processed'] > 0:
                     self._print_stats()
                 
                 time.sleep(self.poll_interval)
@@ -433,17 +412,13 @@ class SQSDeepfakeConsumer:
                        f"Failed: {self.stats['messages_failed']}, "
                        f"Results sent: {self.stats['results_sent']}, "
                        f"Callbacks sent: {self.stats['callbacks_sent']}, "
-                       f"Results sent: {self.stats['results_sent']}, "
-                       f"Callbacks sent: {self.stats['callbacks_sent']}, "
                        f"Runtime: {runtime}")
 
-def create_test_message(sqs_to_ml_url: str, **kwargs) -> str:
 def create_test_message(sqs_to_ml_url: str, **kwargs) -> str:
     """
     Create a test SQS message for the given S3 URL.
     
     Args:
-        sqs_to_ml_url: S3 URL to include in message
         sqs_to_ml_url: S3 URL to include in message
         **kwargs: Additional message fields
         
@@ -451,7 +426,6 @@ def create_test_message(sqs_to_ml_url: str, **kwargs) -> str:
         JSON string of the message
     """
     message = {
-        'sqs_to_ml_url': sqs_to_ml_url,
         'sqs_to_ml_url': sqs_to_ml_url,
         'request_id': f"test_{int(time.time())}",
         **kwargs

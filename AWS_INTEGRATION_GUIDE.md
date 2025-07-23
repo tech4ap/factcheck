@@ -678,7 +678,7 @@ Error: Configuration file not found
 **No Models Found:**
 ```
 No models could be loaded!
-Train models using: python train_and_save_models.py --demo
+Train models using: python src/training/train_and_save_models.py --demo
 ```
 
 **Model Directory Issues:**
