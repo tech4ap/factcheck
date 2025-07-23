@@ -35,6 +35,7 @@ class SQSDeepfakeConsumer:
     Expected message format:
     {
         "sqs_to_ml_url": "s3://bucket/path/to/file.ext",
+        "sqs_to_ml_url": "s3://bucket/path/to/file.ext",
         "callback_url": "https://api.example.com/callback",  # optional
         "request_id": "unique-request-id",  # optional
         "metadata": {  # optional
@@ -55,10 +56,13 @@ class SQSDeepfakeConsumer:
                  visibility_timeout: int = 30,
                  poll_interval: int = 5,
                  result_queue_url: Optional[str] = None):
+                 poll_interval: int = 5,
+                 result_queue_url: Optional[str] = None):
         """
         Initialize SQS consumer.
         
         Args:
+            queue_url: AWS SQS queue URL for receiving messages
             queue_url: AWS SQS queue URL for receiving messages
             aws_region: AWS region
             aws_access_key_id: AWS access key ID (optional, uses env vars if not provided)
@@ -69,8 +73,10 @@ class SQSDeepfakeConsumer:
             visibility_timeout: Message visibility timeout
             poll_interval: Polling interval in seconds
             result_queue_url: Optional SQS queue URL for sending results
+            result_queue_url: Optional SQS queue URL for sending results
         """
         self.queue_url = queue_url
+        self.result_queue_url = result_queue_url
         self.result_queue_url = result_queue_url
         self.aws_region = aws_region
         self.models_dir = models_dir
@@ -95,6 +101,8 @@ class SQSDeepfakeConsumer:
             'messages_failed': 0,
             'results_sent': 0,
             'callbacks_sent': 0,
+            'results_sent': 0,
+            'callbacks_sent': 0,
             'start_time': None
         }
     
@@ -113,25 +121,25 @@ class SQSDeepfakeConsumer:
             
             # Test connection
             sqs.get_queue_attributes(QueueUrl=self.queue_url, AttributeNames=['QueueArn'])
-            logger.info(f"✅ Successfully connected to SQS queue: {self.queue_url}")
+            logger.info(f"Successfully connected to SQS queue: {self.queue_url}")
             
             return sqs
             
         except NoCredentialsError:
-            logger.error("❌ AWS credentials not found!")
-            logger.info("💡 Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables")
+            logger.error("AWS credentials not found!")
+            logger.info("Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables")
             raise
         except ClientError as e:
             error_code = e.response['Error']['Code']
             if error_code == 'AWS.SimpleQueueService.NonExistentQueue':
-                logger.error(f"❌ SQS queue does not exist: {self.queue_url}")
+                logger.error(f"SQS queue does not exist: {self.queue_url}")
             elif error_code == 'AccessDenied':
-                logger.error(f"❌ Access denied to SQS queue: {self.queue_url}")
+                logger.error(f"Access denied to SQS queue: {self.queue_url}")
             else:
-                logger.error(f"❌ Failed to connect to SQS: {e}")
+                logger.error(f"Failed to connect to SQS: {e}")
             raise
         except Exception as e:
-            logger.error(f"❌ Unexpected error initializing SQS client: {e}")
+            logger.error(f"Unexpected error initializing SQS client: {e}")
             raise
     
     def _get_predictor(self):
@@ -150,10 +158,10 @@ class SQSDeepfakeConsumer:
                 
                 # Load models
                 validate_and_load_models(self._predictor)
-                logger.info("🤖 Deepfake predictor initialized and models loaded")
+                logger.info("Deepfake predictor initialized and models loaded")
                 
             except Exception as e:
-                logger.error(f"❌ Failed to initialize predictor: {e}")
+                logger.error(f"Failed to initialize predictor: {e}")
                 raise
         
         return self._predictor
@@ -178,8 +186,12 @@ class SQSDeepfakeConsumer:
             # Validate required fields
             if 'sqs_to_ml_url' not in message_data:
                 raise ValueError("Message missing required field 'sqs_to_ml_url'")
+            if 'sqs_to_ml_url' not in message_data:
+                raise ValueError("Message missing required field 'sqs_to_ml_url'")
             
             # Validate S3 URL format
+            sqs_to_ml_url = message_data['sqs_to_ml_url']
+            validate_s3_url_and_credentials(sqs_to_ml_url, self.aws_access_key_id)
             sqs_to_ml_url = message_data['sqs_to_ml_url']
             validate_s3_url_and_credentials(sqs_to_ml_url, self.aws_access_key_id)
             
@@ -201,15 +213,17 @@ class SQSDeepfakeConsumer:
             Processing result dictionary
         """
         sqs_to_ml_url = message_data['sqs_to_ml_url']
+        sqs_to_ml_url = message_data['sqs_to_ml_url']
         request_id = message_data.get('request_id', f"req_{int(time.time())}")
         
-        logger.info(f"🔍 Processing deepfake detection for: {sqs_to_ml_url} (ID: {request_id})")
+        logger.info(f"Processing deepfake detection for: {sqs_to_ml_url} (ID: {request_id})")
         
         try:
             predictor = self._get_predictor()
             
             # Run prediction with context management for cleanup
             with PredictionContext(predictor, cleanup_files=True) as ctx:
+                result = ctx.predict(sqs_to_ml_url, confidence_threshold=0.5)
                 result = ctx.predict(sqs_to_ml_url, confidence_threshold=0.5)
                 
                 # Enhance result with message metadata
@@ -220,17 +234,18 @@ class SQSDeepfakeConsumer:
                     'original_message': message_data
                 })
                 
-                logger.info(f"✅ Detection complete - {result['label']} "
+                logger.info(f"Detection complete - {result['label']} "
                            f"(confidence: {result['confidence']:.1%}) for {request_id}")
                 
                 return result
                 
         except Exception as e:
-            logger.error(f"❌ Failed to process {request_id}: {e}")
+            logger.error(f"Failed to process {request_id}: {e}")
             
             # Return error result
             return {
                 'request_id': request_id,
+                'sqs_to_ml_url': sqs_to_ml_url,
                 'sqs_to_ml_url': sqs_to_ml_url,
                 'error': str(e),
                 'processed_at': datetime.utcnow().isoformat(),
@@ -248,7 +263,7 @@ class SQSDeepfakeConsumer:
             True if successful, False otherwise
         """
         if not self.result_queue_url:
-            logger.debug("🔄 No result queue configured, skipping result queue send")
+            logger.debug("No result queue configured, skipping result queue send")
             return False
             
         try:
@@ -265,12 +280,12 @@ class SQSDeepfakeConsumer:
                 MessageBody=json.dumps(result_message)
             )
             
-            logger.info(f"✅ Result sent to queue: {self.result_queue_url} (MessageId: {response['MessageId']})")
+            logger.info(f"Result sent to queue: {self.result_queue_url} (MessageId: {response['MessageId']})")
             self.stats['results_sent'] += 1
             return True
             
         except Exception as e:
-            logger.error(f"❌ Failed to send result to queue {self.result_queue_url}: {e}")
+            logger.error(f"Failed to send result to queue {self.result_queue_url}: {e}")
             return False
     
     def send_callback(self, result: Dict[str, Any], callback_url: str) -> bool:
@@ -295,15 +310,15 @@ class SQSDeepfakeConsumer:
             )
             
             if response.status_code == 200:
-                logger.info(f"✅ Callback sent successfully to {callback_url}")
+                logger.info(f"Callback sent successfully to {callback_url}")
                 self.stats['callbacks_sent'] += 1
                 return True
             else:
-                logger.warning(f"⚠️ Callback failed with status {response.status_code}: {callback_url}")
+                logger.warning(f"Callback failed with status {response.status_code}: {callback_url}")
                 return False
                 
         except Exception as e:
-            logger.error(f"❌ Failed to send callback to {callback_url}: {e}")
+            logger.error(f"Failed to send callback to {callback_url}: {e}")
             return False
     
     def poll_messages(self) -> None:
@@ -314,21 +329,22 @@ class SQSDeepfakeConsumer:
                 MaxNumberOfMessages=self.max_messages,
                 WaitTimeSeconds=self.wait_time_seconds,
                 VisibilityTimeout=self.visibility_timeout
+                VisibilityTimeout=self.visibility_timeout
             )
             
             messages = response.get('Messages', [])
             
             if not messages:
-                logger.debug("📭 No messages in queue")
+                logger.debug("No messages in queue")
                 return
             
-            logger.info(f"📨 Received {len(messages)} message(s)")
+            logger.info(f"Received {len(messages)} message(s)")
             
             for message in messages:
                 self._process_single_message(message)
                 
         except Exception as e:
-            logger.error(f"❌ Error polling messages: {e}")
+            logger.error(f"Error polling messages: {e}")
     
     def _process_single_message(self, message: Dict[str, Any]) -> None:
         """Process a single SQS message."""
@@ -347,6 +363,10 @@ class SQSDeepfakeConsumer:
             if self.result_queue_url:
                 self.send_result_to_queue(result)
             
+            # Send result to result queue if configured
+            if self.result_queue_url:
+                self.send_result_to_queue(result)
+            
             # Send callback if provided
             callback_url = message_data.get('callback_url')
             if callback_url:
@@ -358,11 +378,11 @@ class SQSDeepfakeConsumer:
                 ReceiptHandle=receipt_handle
             )
             
-            logger.info(f"✅ Message {message_id} processed and deleted")
+            logger.info(f"Message {message_id} processed and deleted")
             self.stats['messages_processed'] += 1
             
         except Exception as e:
-            logger.error(f"❌ Failed to process message {message_id}: {e}")
+            logger.error(f"Failed to process message {message_id}: {e}")
             self.stats['messages_failed'] += 1
             
             # Optionally: send message to DLQ or handle retry logic
@@ -380,8 +400,8 @@ class SQSDeepfakeConsumer:
         """
         self.stats['start_time'] = datetime.utcnow()
         
-        logger.info(f"🚀 Starting SQS consumer for queue: {self.queue_url}")
-        logger.info(f"📊 Poll interval: {self.poll_interval}s, Max messages: {self.max_messages}")
+        logger.info(f"Starting SQS consumer for queue: {self.queue_url}")
+        logger.info(f"Poll interval: {self.poll_interval}s, Max messages: {self.max_messages}")
         
         try:
             while True:
@@ -392,14 +412,15 @@ class SQSDeepfakeConsumer:
                 
                 # Print stats periodically
                 if self.stats['messages_processed'] % 100 == 0 and self.stats['messages_processed'] > 0:
+                if self.stats['messages_processed'] % 100 == 0 and self.stats['messages_processed'] > 0:
                     self._print_stats()
                 
                 time.sleep(self.poll_interval)
                 
         except KeyboardInterrupt:
-            logger.info("🛑 Consumer stopped by user")
+            logger.info("Consumer stopped by user")
         except Exception as e:
-            logger.error(f"❌ Consumer crashed: {e}")
+            logger.error(f"Consumer crashed: {e}")
             raise
         finally:
             self._print_stats()
@@ -408,17 +429,21 @@ class SQSDeepfakeConsumer:
         """Print consumer statistics."""
         if self.stats['start_time']:
             runtime = datetime.utcnow() - self.stats['start_time']
-            logger.info(f"📊 Stats - Processed: {self.stats['messages_processed']}, "
+            logger.info(f"Stats - Processed: {self.stats['messages_processed']}, "
                        f"Failed: {self.stats['messages_failed']}, "
+                       f"Results sent: {self.stats['results_sent']}, "
+                       f"Callbacks sent: {self.stats['callbacks_sent']}, "
                        f"Results sent: {self.stats['results_sent']}, "
                        f"Callbacks sent: {self.stats['callbacks_sent']}, "
                        f"Runtime: {runtime}")
 
 def create_test_message(sqs_to_ml_url: str, **kwargs) -> str:
+def create_test_message(sqs_to_ml_url: str, **kwargs) -> str:
     """
     Create a test SQS message for the given S3 URL.
     
     Args:
+        sqs_to_ml_url: S3 URL to include in message
         sqs_to_ml_url: S3 URL to include in message
         **kwargs: Additional message fields
         
@@ -426,6 +451,7 @@ def create_test_message(sqs_to_ml_url: str, **kwargs) -> str:
         JSON string of the message
     """
     message = {
+        'sqs_to_ml_url': sqs_to_ml_url,
         'sqs_to_ml_url': sqs_to_ml_url,
         'request_id': f"test_{int(time.time())}",
         **kwargs
@@ -451,5 +477,5 @@ if __name__ == "__main__":
         consumer.start_consuming(run_once=False)
         
     except Exception as e:
-        logger.error(f"❌ Failed to start consumer: {e}")
+        logger.error(f"Failed to start consumer: {e}")
         sys.exit(1) 

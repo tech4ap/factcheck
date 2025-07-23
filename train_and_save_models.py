@@ -52,7 +52,7 @@ def train_and_save_models(data_dir: str, output_dir: str = "models",
         train_video: Whether to train video model
         train_audio: Whether to train audio model
     """
-    logger.info("🚀 Starting comprehensive model training and saving...")
+    logger.info("Starting comprehensive model training and saving...")
     
     # Initialize model saver
     model_saver = ModelSaver(output_dir)
@@ -78,7 +78,7 @@ def train_and_save_models(data_dir: str, output_dir: str = "models",
     
     # Train Image Model
     if train_image:
-        logger.info("📸 Training Image Deepfake Detection Model...")
+        logger.info("Training Image Deepfake Detection Model...")
         try:
             image_model = ImageDeepfakeDetector()
             model = image_model.build_model()
@@ -123,15 +123,15 @@ def train_and_save_models(data_dir: str, output_dir: str = "models",
                 'history': history.history if hasattr(history, 'history') else history
             }
             
-            logger.info(f"✅ Image model trained and saved to {model_path}")
+            logger.info(f"Image model trained and saved to {model_path}")
             
         except Exception as e:
-            logger.error(f"❌ Error training image model: {e}")
+            logger.error(f"Error training image model: {e}")
             training_results['image'] = {'error': str(e)}
     
     # Train Video Model
     if train_video:
-        logger.info("🎬 Training Video Deepfake Detection Model...")
+        logger.info("Training Video Deepfake Detection Model...")
         try:
             video_model = VideoDeepfakeDetector()
             model = video_model.build_model()
@@ -172,15 +172,15 @@ def train_and_save_models(data_dir: str, output_dir: str = "models",
                 'history': history.history if hasattr(history, 'history') else history
             }
             
-            logger.info(f"✅ Video model trained and saved to {model_path}")
+            logger.info(f"Video model trained and saved to {model_path}")
             
         except Exception as e:
-            logger.error(f"❌ Error training video model: {e}")
+            logger.error(f"Error training video model: {e}")
             training_results['video'] = {'error': str(e)}
     
     # Train Audio Model
     if train_audio:
-        logger.info("🎵 Training Audio Deepfake Detection Model...")
+        logger.info("Training Audio Deepfake Detection Model...")
         try:
             audio_model = AudioDeepfakeDetector()
             model = audio_model.build_model()
@@ -221,14 +221,14 @@ def train_and_save_models(data_dir: str, output_dir: str = "models",
                 'history': history.history if hasattr(history, 'history') else history
             }
             
-            logger.info(f"✅ Audio model trained and saved to {model_path}")
+            logger.info(f"Audio model trained and saved to {model_path}")
             
         except Exception as e:
-            logger.error(f"❌ Error training audio model: {e}")
+            logger.error(f"Error training audio model: {e}")
             training_results['audio'] = {'error': str(e)}
     
     # Final summary
-    logger.info("🎯 Training Summary:")
+    logger.info("Training Summary:")
     for model_type, result in training_results.items():
         if 'error' in result:
             logger.error(f"   {model_type.upper()}: Failed - {result['error']}")
@@ -247,7 +247,7 @@ def quick_demo_training():
     """
     Quick demo training with minimal data for testing purposes.
     """
-    logger.info("🔬 Running quick demo training...")
+    logger.info("Running quick demo training...")
     
     # Create minimal demo data structure
     demo_data_dir = "demo_data"
@@ -279,7 +279,7 @@ def quick_demo_training():
         )
         logger.info(f"Demo {model_type} model saved to {model_path}")
     
-    logger.info("🎉 Demo models created! You can now test inference.")
+    logger.info("Demo models created! You can now test inference.")
 
 def main():
     """Main training function."""
@@ -329,12 +329,12 @@ Examples:
         return
     
     if not args.data_dir:
-        logger.error("❌ Data directory is required unless using --demo mode")
+        logger.error("Data directory is required unless using --demo mode")
         parser.print_help()
         return
     
     if not Path(args.data_dir).exists():
-        logger.error(f"❌ Data directory not found: {args.data_dir}")
+        logger.error(f"Data directory not found: {args.data_dir}")
         return
     
     # Determine which models to train
@@ -359,13 +359,13 @@ Examples:
             train_audio=train_audio
         )
         
-        logger.info("🎉 Training completed successfully!")
+        logger.info("Training completed successfully!")
         logger.info(f"Models saved to: {args.output_dir}")
         logger.info("You can now use the inference script to test your models:")
         logger.info(f"python src/inference/predict_deepfake.py --input your_file.jpg")
         
     except Exception as e:
-        logger.error(f"❌ Training failed: {e}")
+        logger.error(f"Training failed: {e}")
         raise
 
 if __name__ == "__main__":

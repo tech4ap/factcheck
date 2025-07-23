@@ -51,15 +51,15 @@ class TestReportGenerator:
         Returns:
             Dictionary containing test results
         """
-        print("🔍 Running tests with coverage...")
+        print("Running tests with coverage...")
         
         # Build pytest command
         cmd = [
-            "python", "-m", "pytest",
+            sys.executable, "-m", "pytest",
             "--cov=src",
-            "--cov-report=term-missing",
+            "--cov-report=json:coverage.json",
             "--cov-report=html:htmlcov",
-            "--cov-report=xml:coverage.xml",
+            "--cov-report=term-missing",
             "--junitxml=test-results.xml",
             "-v"
         ]
@@ -84,11 +84,11 @@ class TestReportGenerator:
                 "command": " ".join(cmd)
             }
             
-            print(f"✅ Tests completed with return code: {result.returncode}")
+            print(f"Tests completed with return code: {result.returncode}")
             return self.test_results
             
         except Exception as e:
-            print(f"❌ Error running tests: {e}")
+            print(f"Error running tests: {e}")
             return {"error": str(e)}
     
     def parse_coverage_data(self) -> Dict[str, Any]:
@@ -137,7 +137,7 @@ class TestReportGenerator:
             return coverage_data
             
         except Exception as e:
-            print(f"⚠️ Warning: Could not parse coverage data: {e}")
+            print(f"Warning: Could not parse coverage data: {e}")
             return {}
     
     def generate_coverage_chart(self) -> str:
@@ -187,7 +187,7 @@ class TestReportGenerator:
             return str(chart_path)
             
         except Exception as e:
-            print(f"⚠️ Warning: Could not generate coverage chart: {e}")
+            print(f"Warning: Could not generate coverage chart: {e}")
             return ""
     
     def generate_test_summary(self) -> Dict[str, Any]:
@@ -359,7 +359,7 @@ class TestReportGenerator:
 <body>
     <div class="container">
         <div class="header">
-            <h1>🧪 Test Report</h1>
+            <h1>Test Report</h1>
             <p>Deepfake Detection Project</p>
             <div class="status {'passed' if summary['test_status'] == 'PASSED' else 'failed'}">
                 {summary['test_status']}
@@ -368,7 +368,7 @@ class TestReportGenerator:
         </div>
         
         <div class="section">
-            <h2>📊 Test Summary</h2>
+            <h2>Test Summary</h2>
             <div class="metric">
                 <div class="metric-value">{summary['test_status']}</div>
                 <div class="metric-label">Test Status</div>
@@ -402,7 +402,7 @@ class TestReportGenerator:
         {f'<div class="coverage-chart"><img src="{coverage_chart}" alt="Coverage Chart"></div>' if coverage_chart else ''}
         
         <div class="section">
-            <h2>💡 Recommendations</h2>
+            <h2>Recommendations</h2>
             <div class="recommendations">
                 <h3>Improvement Suggestions:</h3>
                 <ul>
@@ -412,7 +412,7 @@ class TestReportGenerator:
         </div>
         
         <div class="section">
-            <h2>📋 Test Output</h2>
+            <h2>Test Output</h2>
             <div class="test-output">{self.test_results.get('stdout', 'No output available')}</div>
         </div>
         
@@ -452,7 +452,7 @@ class TestReportGenerator:
         Returns:
             Dictionary with paths to generated reports
         """
-        print("🚀 Starting comprehensive test report generation...")
+        print("Starting comprehensive test report generation...")
         
         # Run tests
         self.run_tests(test_files)
@@ -466,12 +466,12 @@ class TestReportGenerator:
         # HTML report
         html_report = self.create_html_report()
         reports["html_report"] = html_report
-        print(f"📄 HTML report generated: {html_report}")
+        print(f"HTML report generated: {html_report}")
         
         # JSON summary
         json_summary = self.save_summary_json()
         reports["json_summary"] = json_summary
-        print(f"📊 JSON summary generated: {json_summary}")
+        print(f"JSON summary generated: {json_summary}")
         
         # Coverage chart
         if self.coverage_data.get("packages"):
@@ -480,7 +480,7 @@ class TestReportGenerator:
                 reports["coverage_chart"] = coverage_chart
                 print(f"📈 Coverage chart generated: {coverage_chart}")
         
-        print("✅ Test report generation completed!")
+        print("Test report generation completed!")
         return reports
 
 
@@ -502,7 +502,7 @@ def main():
     
     # Print summary
     print("\n" + "="*60)
-    print("📋 REPORT SUMMARY")
+    print("REPORT SUMMARY")
     print("="*60)
     print(f"HTML Report: {reports.get('html_report', 'Not generated')}")
     print(f"JSON Summary: {reports.get('json_summary', 'Not generated')}")
@@ -514,9 +514,9 @@ def main():
         try:
             import webbrowser
             webbrowser.open(f"file://{Path(reports['html_report']).absolute()}")
-            print("🌐 Opening HTML report in browser...")
+            print("Opening HTML report in browser...")
         except Exception as e:
-            print(f"⚠️ Could not open browser: {e}")
+            print(f"Could not open browser: {e}")
 
 
 if __name__ == "__main__":

@@ -116,7 +116,7 @@ def validate_and_load_models(predictor: 'EnhancedDeepfakePredictor',
         )
     
     loaded_model_names = [k for k, v in loaded_models.items() if v]
-    logger.info(f"✅ Loaded models: {loaded_model_names}")
+    logger.info(f"Loaded models: {loaded_model_names}")
     
     return loaded_models
 
@@ -128,35 +128,35 @@ def print_prediction_result(result: Dict[str, Any]) -> None:
         result: Prediction result dictionary
     """
     print("\n" + "="*60)
-    print("🔍 DEEPFAKE DETECTION RESULTS")
+    print("DEEPFAKE DETECTION RESULTS")
     print("="*60)
-    print(f"📁 File: {result['file_path']}")
+    print(f"File: {result['file_path']}")
     
     # Show S3 information if applicable
     if result.get('is_s3_file', False):
-        print(f"☁️  Source: Amazon S3")
+        print(f"Source: Amazon S3")
         if result.get('local_path'):
-            print(f"💾 Downloaded to: {result['local_path']}")
+            print(f"Downloaded to: {result['local_path']}")
         if result.get('s3_file_info'):
             s3_info = result['s3_file_info']
-            print(f"📊 S3 Info: {s3_info.get('size', 0):,} bytes, {s3_info.get('content_type', 'Unknown')}")
+            print(f"S3 Info: {s3_info.get('size', 0):,} bytes, {s3_info.get('content_type', 'Unknown')}")
     
-    print(f"📋 Type: {result['file_type'].upper()}")
-    print(f"🎯 Prediction: {result['label']}")
-    print(f"📊 Confidence: {result['confidence']:.1%}")
-    print(f"📈 Raw Score: {result['prediction_score']:.4f}")
+    print(f"Type: {result['file_type'].upper()}")
+    print(f"Prediction: {result['label']}")
+    print(f"Confidence: {result['confidence']:.1%}")
+    print(f"Raw Score: {result['prediction_score']:.4f}")
     
     if result['label'] == 'FAKE':
-        print("⚠️  WARNING: This appears to be a DEEPFAKE!")
+        print("WARNING: This appears to be a DEEPFAKE!")
     else:
-        print("✅ This appears to be REAL content.")
+        print("This appears to be REAL content.")
     
     # Additional info based on file type
     if result['file_type'] == 'video':
-        print(f"🎬 Duration: {result.get('duration_seconds', 'N/A'):.1f}s")
-        print(f"🖼️  Frames analyzed: {result.get('frames_extracted', 'N/A')}")
+        print(f"Duration: {result.get('duration_seconds', 'N/A'):.1f}s")
+        print(f"Frames analyzed: {result.get('frames_extracted', 'N/A')}")
     elif result['file_type'] == 'audio':
-        print(f"🎵 Duration: {result.get('duration_seconds', 'N/A'):.1f}s")
+        print(f"Duration: {result.get('duration_seconds', 'N/A'):.1f}s")
     
     print("="*60)
 
@@ -180,10 +180,10 @@ def save_prediction_result(result: Dict[str, Any],
         else:
             raise ValueError(f"Unsupported format: {format_type}")
         
-        logger.info(f"💾 Results saved to {output_file}")
+        logger.info(f"Results saved to {output_file}")
         
     except Exception as e:
-        logger.error(f"❌ Failed to save results: {e}")
+        logger.error(f"Failed to save results: {e}")
         raise
 
 def print_batch_summary(results_df: pd.DataFrame) -> None:
@@ -205,7 +205,7 @@ def print_batch_summary(results_df: pd.DataFrame) -> None:
     fake_count = len(results_df[results_df['label'] == 'FAKE']) if 'label' in results_df.columns else 0
     real_count = len(results_df[results_df['label'] == 'REAL']) if 'label' in results_df.columns else 0
     
-    print(f"\n📊 BATCH PROCESSING SUMMARY")
+    print(f"\nBATCH PROCESSING SUMMARY")
     print("="*40)
     print(f"Total files: {total_files}")
     print(f"Successfully processed: {successful}")
@@ -226,16 +226,16 @@ def list_available_models(predictor: 'EnhancedDeepfakePredictor') -> None:
         predictor: EnhancedDeepfakePredictor instance
     """
     models = predictor.list_available_models()
-    print("\n📋 Available Models:")
+    print("\nAVAILABLE MODELS:")
     print("="*50)
     
     if not models:
-        print("❌ No models found!")
-        print("💡 Train models using: python train_and_save_models.py --demo")
+        print("No models found!")
+        print("Train models using: python train_and_save_models.py --demo")
         return
     
     for model_type, metadata in models.items():
-        print(f"🤖 {model_type.upper()} Model")
+        print(f"Model: {model_type.upper()}")
         print(f"   Timestamp: {metadata.get('timestamp', 'N/A')}")
         
         # Get evaluation results
@@ -252,11 +252,13 @@ def list_available_models(predictor: 'EnhancedDeepfakePredictor') -> None:
         print()
 
 def validate_s3_url_and_credentials(sqs_to_ml_url: str, 
+def validate_s3_url_and_credentials(sqs_to_ml_url: str, 
                                    aws_access_key_id: Optional[str] = None) -> None:
     """
     Validate S3 URL format and check for AWS credentials.
     
     Args:
+        sqs_to_ml_url: S3 URL to validate
         sqs_to_ml_url: S3 URL to validate
         aws_access_key_id: AWS access key (if provided)
         
@@ -274,16 +276,17 @@ def validate_s3_url_and_credentials(sqs_to_ml_url: str,
         from utils.s3_utils import is_s3_url
     
     if not is_s3_url(sqs_to_ml_url):
+    if not is_s3_url(sqs_to_ml_url):
         raise ValueError(
             f"Invalid S3 URL: {sqs_to_ml_url}\n"
-            "💡 S3 URLs should be in format: s3://bucket/path/to/file.ext"
+            "S3 URLs should be in format: s3://bucket/path/to/file.ext"
         )
     
     # Check AWS credentials if not provided
     if not aws_access_key_id and not os.getenv('AWS_ACCESS_KEY_ID'):
-        logger.warning("⚠️  No AWS credentials provided!")
-        logger.info("💡 Use environment variables or pass credentials via command line")
-        logger.info("💡 Run with --setup-aws for setup instructions")
+        logger.warning("No AWS credentials provided!")
+        logger.info("Use environment variables or pass credentials via command line")
+        logger.info("Run with --setup-aws for setup instructions")
 
 def cleanup_temporary_file(file_path: Optional[str]) -> None:
     """
@@ -295,10 +298,11 @@ def cleanup_temporary_file(file_path: Optional[str]) -> None:
     if file_path and Path(file_path).exists():
         try:
             Path(file_path).unlink()
-            logger.info(f"🧹 Cleaned up temporary file: {file_path}")
+            logger.info(f"Cleaned up temporary file: {file_path}")
         except Exception as e:
             logger.warning(f"Could not cleanup temporary file: {e}")
 
+def get_s3_file_info(sqs_to_ml_url: str, 
 def get_s3_file_info(sqs_to_ml_url: str, 
                     aws_access_key_id: Optional[str] = None,
                     aws_secret_access_key: Optional[str] = None,
@@ -308,6 +312,7 @@ def get_s3_file_info(sqs_to_ml_url: str,
     Get S3 file information safely with error handling.
     
     Args:
+        sqs_to_ml_url: S3 URL of the file
         sqs_to_ml_url: S3 URL of the file
         aws_access_key_id: AWS access key ID
         aws_secret_access_key: AWS secret access key
@@ -340,7 +345,7 @@ def get_s3_file_info(sqs_to_ml_url: str,
             return None
         
         file_info = s3_handler.get_file_info(sqs_to_ml_url)
-        logger.info(f"📊 S3 File info: {file_info['size']:,} bytes, {file_info['content_type']}")
+        logger.info(f"S3 File info: {file_info['size']:,} bytes, {file_info['content_type']}")
         return file_info
         
     except Exception as e:
@@ -358,16 +363,16 @@ def handle_prediction_error(error: Exception, context: str = "prediction") -> No
     error_msg = str(error)
     
     if "S3 client not initialized" in error_msg:
-        logger.error("❌ AWS credentials not configured properly")
-        logger.info("💡 Check your AWS credentials and try again")
+        logger.error("AWS credentials not configured properly")
+        logger.info("Check your AWS credentials and try again")
     elif "No models could be loaded" in error_msg:
-        logger.error("❌ No trained models found")
-        logger.info("💡 Train models using: python train_and_save_models.py --demo")
+        logger.error("No trained models found")
+        logger.info("Train models using: python train_and_save_models.py --demo")
     elif "File not found" in error_msg:
-        logger.error(f"❌ File not found: {error_msg}")
-        logger.info("💡 Check the file path and try again")
+        logger.error(f"File not found: {error_msg}")
+        logger.info("Check the file path and try again")
     else:
-        logger.error(f"❌ Error during {context}: {error}")
+        logger.error(f"Error during {context}: {error}")
     
     # Log full traceback in debug mode
     logger.debug(f"Full error details:", exc_info=True)

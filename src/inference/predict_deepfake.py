@@ -149,7 +149,7 @@ class EnhancedDeepfakePredictor:
     def _download_s3_file_if_needed(self, file_path: str) -> str:
         """Download S3 file if needed and return local path."""
         if is_s3_url(file_path):
-            logger.info(f"🔗 Detected S3 URL: {file_path}")
+            logger.info(f"Detected S3 URL: {file_path}")
             try:
                 local_path = self.s3_handler.download_file(file_path)
                 return local_path
@@ -209,10 +209,7 @@ class EnhancedDeepfakePredictor:
             
             # Make prediction
             prediction = self.image_model.model.predict(img, verbose=0)[0][0]
-            logger.info(f"📄 AJAY1: Prediction: {prediction}")
-            if prediction <= 0.5:
-                prediction = prediction + 0.5
-                logger.info(f"📄 AJAY2: Prediction: {prediction}")
+            
             # Calculate confidence and label
             confidence = abs(prediction - 0.5) * 2
             label = "FAKE" if prediction > confidence_threshold else "REAL"
@@ -536,7 +533,7 @@ def main():
     
     # Validate input is provided when not listing models
     if not args.input:
-        logger.error("❌ Input file/directory is required unless using --list-models")
+        logger.error("Input file/directory is required unless using --list-models")
         parser.print_help()
         return
     
@@ -552,13 +549,13 @@ def main():
     
     # Check if it's an S3 URL or local file
     if not is_s3_url(args.input) and not input_path.exists():
-        logger.error(f"❌ Input not found: {args.input}")
+        logger.error(f"Input not found: {args.input}")
         return
     
     try:
         if args.batch or (not is_s3_url(args.input) and input_path.is_dir()):
             # Batch processing
-            logger.info("🔄 Starting batch processing...")
+            logger.info("Starting batch processing...")
             results_df = predictor.batch_predict(
                 args.input, 
                 output_file=args.output,
@@ -570,7 +567,7 @@ def main():
             
         else:
             # Single file processing
-            logger.info(f"🔍 Analyzing file: {args.input}")
+            logger.info(f"Analyzing file: {args.input}")
             result = predictor.predict_auto(args.input, args.threshold)
             
             # Print result
